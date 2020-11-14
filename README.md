@@ -1,0 +1,6 @@
+- git 
+- node 
+- yarn
+- eslint
+- prettier 
+- next.js 
