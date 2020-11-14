@@ -1,6 +1,26 @@
 # ignore environment variables
 .env
 # ignore node_modules
-node_modules
+node_modules/
 # ignore DS_Store
 DS_Store
+
+# Suggested 
+*~
+*.swp
+tmp/
+npm-debug.log
+.DS_Store
+
+
+
+.build/*
+.next
+.coverage
+now.json
+.note
+
+compiled/
+production-server/
+
+yarn-error.log
