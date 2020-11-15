@@ -70,7 +70,8 @@ Let's say your web application gets popular and many people navigate between pag
 
 The solution is to decouple tasks. We can make one server responsible for requests to pages and make a new, second server deal with API requests. We can call our current web application, which is located at book/3-begin/app, APP. And we can call a new server, which will deal with API requests, API.
 
-Let's illustrate a new infrastructure where we have two servers, APP and API, instead of only one:
+
+- Order matters for an Express.js server. Not only does the order of Express routes matter, but also the order of Express middleware matters. If you move server.use(express.json()); middleware under all Express routes, then you will get an Invalid JSON error.
 
 ## Javascript Promises
 - In JavaScript, a Promise object is a special object that has state and result properties, as well as methods (e.g. resolve and reject methods). Here's some good documentation for Promise object and its properties:
