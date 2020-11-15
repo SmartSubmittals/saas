@@ -1,7 +1,11 @@
+import Button from '@material-ui/core/Button';
 import React from 'react';
 import Head from 'next/head';
+
 import Link from 'next/link';
+
 import Layout from '../components/layout';
+import { openSnackbarExternal } from '../components/common/Notifier';
 
 const Index = () => (
   <Layout firstGridItem={true}>
@@ -14,6 +18,10 @@ const Index = () => (
       <Link href="/csr-page" as="/csr-page">
         <a>Go to CSR page</a>
       </Link>
+      <p />
+      <Button variant="contained" onClick={() => openSnackbarExternal({ message: 'some text' })}>
+        Open Notifier
+      </Button>
     </div>
   </Layout>
 );
