@@ -1,5 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
+import MenuWithLinks from '../common/MenuWithLinks';
+import Avatar from '@material-ui/core/Avatar';
 
 const styleGrid = {
   width: '100vw',
@@ -24,13 +26,13 @@ class Layout extends React.Component<Props> {
         {firstGridItem ? (
           <Grid
             item
-            sm={2}
+            sm={3}
             xs={12}
             style={{
               borderRight: '1px #707070 solid',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', margin: '0px 10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="124"
@@ -60,14 +62,51 @@ class Layout extends React.Component<Props> {
                   />
                 </g>
               </svg>
-              <p>Clickable Avatar</p>
+              {/* <p>Clickable Avatar</p> */}
+              <MenuWithLinks
+                options={[
+                  {
+                    text: 'Index page',
+                    href: '/',
+                    highlighterSlug: '/',
+                  },
+                  {
+                    text: 'Your Settings',
+                    href: '/your-settings',
+                    highlighterSlug: '/your-settings',
+                  },
+                  {
+                    separator: true,
+                  },
+                  {
+                    text: 'Log out',
+                    href: '/logout',
+                  },
+                ]}
+              >
+                <Avatar
+                  src={'https://storage.googleapis.com/async-await/default-user.png'}
+                  alt="Add username here later in the book"
+                  style={{
+                    margin: '20px auto',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    width: '40px',
+                    height: '40px',
+                  }}
+                />
+
+                <i className="material-icons" color="action" style={{ verticalAlign: 'super' }}>
+                  arrow_drop_down
+                </i>
+              </MenuWithLinks>
             </div>
             <hr />
             <p />
             <p />
           </Grid>
         ) : null}
-        <Grid item sm={10} xs={12}>
+        <Grid item sm={9} xs={12}>
           {children}
         </Grid>
       </Grid>
