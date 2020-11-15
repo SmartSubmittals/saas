@@ -11,6 +11,7 @@
     "lint": "eslint . --ext .ts,.tsx --fix"
   },
   "dependencies": {
+    "@material-ui/core": "^4.11.0",
     "dotenv": "^8.1.0",
     "eslint-plugin-react": "^7.21.5",
     "next": "9.0.7",

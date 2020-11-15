@@ -1,9 +1,36 @@
 import Document, { Head, Html, Main, NextScript } from 'next/document';
 import React from 'react';
+import { ServerStyleSheets } from '@material-ui/core/styles';
 
 class MyDocument extends Document {
+  public static getInitialProps = async (ctx) => {
+    // Render app and page and get the context of the page with collected side effects.
+    const sheets = new ServerStyleSheets();
+    const originalRenderPage = ctx.renderPage;
+
+    ctx.renderPage = () =>
+      originalRenderPage({
+        enhanceApp: (App) => (props) => sheets.collect(<App {...props} />),
+      });
+
+    const initialProps = await Document.getInitialProps(ctx);
+
+    console.log(initialProps);
+    console.log(initialProps.styles);
+    console.log(React.Children.toArray(initialProps.styles));
+
+    console.log(sheets);
+    console.log(sheets.getStyleElement());
+
+    return {
+      ...initialProps,
+      styles: [...React.Children.toArray(initialProps.styles), sheets.getStyleElement()],
+    };
+  };
+
   public render() {
-    console.log(process.env.URL_APP);
+    console.log('rendered on the server');
+
     return (
       <Html lang="en">
         <Head>
