@@ -18,3 +18,4 @@ After a user has loaded a Next.js application on his/her browser, this user may 
 ## React Higher Order Components
 - Bundling oft-used features into the react components that get loaded on every page. that way we define them once and allow for their use everywhere 
 - i.e. Notifier and Confirmer
+- Passing isMobile as props for all components
