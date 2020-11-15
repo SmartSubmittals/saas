@@ -1,7 +1,8 @@
+import Avatar from '@material-ui/core/Avatar';
 import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import MenuWithLinks from '../common/MenuWithLinks';
-import Avatar from '@material-ui/core/Avatar';
+import Confirmer from '../common/Confirmer';
 import Notifier from '../common/Notifier';
 
 const styleGrid = {
@@ -11,19 +12,35 @@ const styleGrid = {
   padding: '0px 10px',
 };
 
+const styleGridIsMobile = {
+  width: '100vw',
+  minHeight: '100vh',
+  maxWidth: '100%',
+  padding: '0px 0px 0px 10px',
+};
+
 type Props = {
   firstGridItem?: boolean;
   children: React.ReactNode;
+  isMobile?: boolean;
 };
 
 class Layout extends React.Component<Props> {
   public render() {
-    const { firstGridItem, children } = this.props;
+    const { firstGridItem, children, isMobile } = this.props;
 
     const isThemeDark = false;
 
+    console.log(isMobile);
+
     return (
-      <Grid container direction="row" justify="flex-start" alignItems="stretch" style={styleGrid}>
+      <Grid
+        container
+        direction="row"
+        justify="flex-start"
+        alignItems="stretch"
+        style={isMobile ? styleGridIsMobile : styleGrid}
+      >
         {firstGridItem ? (
           <Grid
             item
@@ -63,7 +80,6 @@ class Layout extends React.Component<Props> {
                   />
                 </g>
               </svg>
-              {/* <p>Clickable Avatar</p> */}
               <MenuWithLinks
                 options={[
                   {
@@ -105,12 +121,14 @@ class Layout extends React.Component<Props> {
             <hr />
             <p />
             <p />
-            <Notifier />
           </Grid>
         ) : null}
         <Grid item sm={9} xs={12}>
+          {isMobile ? <hr /> : null}
           {children}
         </Grid>
+        <Notifier />
+        <Confirmer />
       </Grid>
     );
   }

@@ -15,6 +15,7 @@
     "dotenv": "^8.1.0",
     "eslint-plugin-react": "^7.21.5",
     "next": "9.0.7",
+    "nprogress": "^0.2.0",
     "react": "16.10.1",
     "react-dom": "16.10.1",
     "typescript": "3.6.3"
