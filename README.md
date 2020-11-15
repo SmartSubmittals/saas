@@ -52,3 +52,40 @@ In contrast, Next.js, by default, does not compile code in the server/server.ts 
     The server renders a page with the user's email addresss (on the server)
     The server sends a rendered page to the browser
     The browser displays a server-side rendered page with the user's email (on the browser)
+
+## Next && Express 
+We chose the Next.js framework for many benefits it offers: server-side rendering, routing for pages, compiling, etc. Our current web application has a hybrid server - there are two servers, and both listen to incoming requests:
+
+    The Next.js or next server deals with requests for pages and static files.
+    The Express.js or express server deals with API requests (data manipulation, CRUD tasks)
+
+In other words:
+
+    End users who load pages make the next server busy.
+    End users who CRUD data (submit forms, delete Posts, edit Discussions) make the express server busy.
+
+- But due to Node.js's fundamental property of being single-threaded, our next and express servers are mutually blocking.
+
+Let's say your web application gets popular and many people navigate between pages - that would make the next server clogged with tasks and moreover will block the express server. End users that load many pages will block CRUD tasks. The opposite is also true - heavy CRUDing in your web application on the express server will block page rendering (and loading as a result) since the next server will be blocked.
+
+The solution is to decouple tasks. We can make one server responsible for requests to pages and make a new, second server deal with API requests. We can call our current web application, which is located at book/3-begin/app, APP. And we can call a new server, which will deal with API requests, API.
+
+Let's illustrate a new infrastructure where we have two servers, APP and API, instead of only one:
+
+## Javascript Promises
+- In JavaScript, a Promise object is a special object that has state and result properties, as well as methods (e.g. resolve and reject methods). Here's some good documentation for Promise object and its properties:
+
+https://javascript.info/promise-basics
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+
+This is how a Promise works:
+
+    A Promise object initially has state: "pending", result: undefined.
+    When a Promise's method resolve (for example, resolve("Resolved")) is called, the object parameters become state: "fulfilled", result: "Resolved".
+    When a Promise's method reject (for example, reject("Rejected")) is called, the object parameters become state: "rejected", result: "Rejected".
+
+
+
+# Scaling Node.js Server
+- https://async-await.com/article/how-to-scale-a-node-js-server-isolate-expensive-tasks-in-forked-process
