@@ -19,3 +19,8 @@ After a user has loaded a Next.js application on his/her browser, this user may 
 - Bundling oft-used features into the react components that get loaded on every page. that way we define them once and allow for their use everywhere 
 - i.e. Notifier and Confirmer
 - Passing isMobile as props for all components
+
+## 11/15/2020 - before express commit
+- So far, we have not written any server-specific code in our Next.js application. The code inside pages, components, and lib is available on both client (browser) and server. Say you load the Index page on the browser. The code from components gets imported to the Index page, and this page gets rendered on the server and then sent to the browser. If you access the Index page by clicking a navigational link (<Link /> element), then the page is rendered on the browser. In other words, the code we wrote is available and present on both client and server.
+
+We have not written any code that is only present on the server and never gets sent to the client (browser). Why? Because up until this moment, there was no need to have such code. Next.js was taking care of routing for pages! If we want to render a page at route /, then we create a file with the name index.tsx inside the pages folder. That's it, done. The name of the file becomes a route automatically. Next.js provides simple routing for pages out-of-the-box.

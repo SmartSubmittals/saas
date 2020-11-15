@@ -12,7 +12,7 @@ class MyApp extends App {
       Object.assign(pageProps, await Component.getInitialProps(ctx));
     }
 
-    console.log(pageProps);
+    // console.log(pageProps);
 
     return { pageProps };
   }
@@ -26,7 +26,7 @@ class MyApp extends App {
   }
   public render() {
     const { Component, pageProps } = this.props;
-    console.log(isMobile);
+    // console.log(isMobile);
 
     return (
       <ThemeProvider theme={false ? themeDark : themeLight}>
