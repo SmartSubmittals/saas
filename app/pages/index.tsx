@@ -11,7 +11,8 @@ import notify from '../lib/notify';
 
 import { getUser } from '../lib/api/public';
 
-class Index extends React.Component {
+type IndexProps = { user: { email: string } };
+class Index extends React.Component<IndexProps> {
   public static async getInitialProps(ctx) {
     const { req } = ctx;
 
@@ -63,6 +64,7 @@ class Index extends React.Component {
           >
             Test Confirmer and Notifier
           </Button>
+          <p>Email: {this.props.user.email}</p>
         </div>
       </Layout>
     );
