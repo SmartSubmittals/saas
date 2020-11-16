@@ -10,6 +10,7 @@
 - jest.js
 
 
+last checkpoint: [MongoDB index](https://builderbook.org/books/saas-boilerplate/user-model-mongoose-and-mongodb-mongodb-index-jest-testing-your-settings-page-file-upload-to-aws-s3#mongodb-index)
 ## Server Side vs Client Side Rendering 
 - https://async-await.com/article/server-side-vs-client-side-rendering-in-react-apps
 
