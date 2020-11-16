@@ -7,3 +7,13 @@ export const getUser = (request) =>
     request,
     method: 'GET',
   });
+
+export const getUserBySlugApiMethod = (slug) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/get-user-by-slug`, {
+    body: JSON.stringify({ slug }),
+  });
+
+export const updateProfileApiMethod = (data) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/user/update-profile`, {
+    body: JSON.stringify(data),
+  });
