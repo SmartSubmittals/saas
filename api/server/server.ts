@@ -1,14 +1,12 @@
 import './env';
 import * as express from 'express';
+import api from './api';
 
 const server = express();
 
 server.use(express.json());
 
-server.get('/api/v1/public/get-user', (_, res) => {
-  console.log('API server got request from APP server');
-  res.json({ user: { email: 'team@builderbook.org' } });
-});
+api(server);
 
 // The * wildcard path/route is sending a response with 403 status on all possible routes.
 server.get('*', (_, res) => {

@@ -5,6 +5,9 @@
 - prettier 
 - next.js 
 - express
+- mongoDB
+- mongoose
+- jest.js
 
 
 ## Server Side vs Client Side Rendering 
@@ -90,3 +93,18 @@ This is how a Promise works:
 
 # Scaling Node.js Server
 - https://async-await.com/article/how-to-scale-a-node-js-server-isolate-expensive-tasks-in-forked-process
+
+
+## MongoDB
+
+- MongoDB database stores data as a so-called Document. The format of the Document is BSON. BSON is a binary representation of JSON data:
+- Mongoose Schema allows you to define the shape of the MongoDB Document
+-In Mongoose, Model is a class:
+
+https://mongoosejs.com/docs/api.html#model_Model
+
+- In Mongoose, we call the model method to create a subclass of Mongoose Model:
+'''const User = mongoose.model('User', mongoSchema);'''
+- 
+
+- An instance of the User Model is a Mongoose Document, which is also a class. A Mongoose Document represents a one-to-one mapping to documents as stored in MongoDB:
