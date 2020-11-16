@@ -1,6 +1,17 @@
 import './env';
 import * as express from 'express';
+import * as mongoose from 'mongoose';
 import api from './api';
+// import logger from './logs';
+
+const options = {
+  useNewUrlParser: true,
+  useCreateIndex: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
+};
+
+mongoose.connect(process.env.MONGO_URL, options);
 
 const server = express();
 

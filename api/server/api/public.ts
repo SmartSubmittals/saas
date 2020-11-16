@@ -13,6 +13,8 @@ import * as express from 'express';
    try {
      const { slug } = req.body;
 
+     console.log(slug)
+
      const user = await User.getUserBySlug({ slug });
 
      res.json({ user });

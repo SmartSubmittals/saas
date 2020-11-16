@@ -8,17 +8,17 @@ import NProgress from 'nprogress';
 
 import confirm from '../lib/confirm';
 import notify from '../lib/notify';
+import { getUserBySlugApiMethod } from '../lib/api/public';
 
-import { getUser } from '../lib/api/public';
+type Props = { user: { email: string; displayName: string } };
 
-type IndexProps = { user: { email: string } };
-class Index extends React.Component<IndexProps> {
-  public static async getInitialProps(ctx) {
-    const { req } = ctx;
+class Index extends React.Component<Props> {
+  public static async getInitialProps() {
+    const slug = 'team-builder-book';
 
-    const user = await getUser(req);
+    const user = await getUserBySlugApiMethod(slug);
 
-    // console.log(user);
+    console.log(user);
 
     return { ...user };
   }
@@ -64,7 +64,8 @@ class Index extends React.Component<IndexProps> {
           >
             Test Confirmer and Notifier
           </Button>
-          <p>Email: {this.props.user.email}</p>
+          <p>Your email: {this.props.user.email}</p>
+          <p>Your name: {this.props.user.displayName}</p>
         </div>
       </Layout>
     );

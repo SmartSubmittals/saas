@@ -47,14 +47,15 @@ interface UserModel extends mongoose.Model<UserDocument> {
 
 class UserClass extends mongoose.Model {
   public static async getUserBySlug({ slug }) {
-    console.log('Static method');
-    const userDoc = await mongoose.findOne({ slug }, 'email displayName', { lean: true });
+
+    const userDoc = await User.findOne({ slug }, 'email displayName', { lean: true });
+    console.log('userDoc: ', userDoc)
 
     return userDoc;
   }
 
   public static async updateProfile({ userId, name, avatarUrl }) {
-    const user = await mongoose.findById(userId, 'slug displayName');
+    const user = await User.findById(userId, 'slug displayName');
 
     const modifier = { displayName: user.displayName, avatarUrl, slug: user.slug };
 
@@ -63,7 +64,7 @@ class UserClass extends mongoose.Model {
       modifier.slug = name;
     }
 
-    return mongoose.findByIdAndUpdate(userId, { $set: modifier }, { new: true, runValidators: true })
+    return User.findByIdAndUpdate(userId, { $set: modifier }, { new: true, runValidators: true })
       .select('displayName avatarUrl slug')
       .setOptions({ lean: true });
   }
