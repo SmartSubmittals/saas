@@ -113,3 +113,8 @@ https://mongoosejs.com/docs/api.html#model_Model
 - In MongoDB, a collection contains documents (e.g. the users collection contains user documents). When you want to find one document in a database by say the _id parameter - the database has to scan each document, which has many parameters, within the entire collection (a so-called collection scan). This can be time consuming. An index is a data structure that stores values for only one or a few parameters - so our database saves time by scanning an index instead of performing a collection scan. However, we have to configure MongoDB to create an index for certain parameters.
 
 - single field, unique single field, compound, and unique compound 
+
+## Jest 
+
+- https://jestjs.io/
+

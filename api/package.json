@@ -5,13 +5,22 @@
     "author": "brdlysmth <brsmith110@gmail.com>",
     "license": "MIT",
     "scripts": {
-        "dev": "ts-node-dev --respawn --transpile-only --project tsconfig.server.json server/server.ts",
-        "lint": "eslint . --ext .ts,.tsx --fix"
+        "dev": "ts-node-dev --respawn --transpileOnly --project tsconfig.server.json server/server.ts",
+        "lint": "eslint . --ext .ts,.tsx",
+        "test": "jest"
+    },
+    "jest": {
+        "preset": "ts-jest",
+        "testPathIgnorePatterns": [
+            "production-server"
+        ]
     },
     "dependencies": {
+        "@types/jest": "^26.0.15",
         "dotenv": "8.2.0",
         "eslint-plugin-react": "^7.21.5",
         "express": "4.17.1",
+        "jest": "^26.6.3",
         "mongoose": "^5.10.14",
         "react": "^17.0.1",
         "typescript": "3.7.4",
