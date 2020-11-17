@@ -118,6 +118,9 @@ https://mongoosejs.com/docs/api.html#model_Model
 
 - single field, unique single field, compound, and unique compound 
 
+## Mongoose
+- mongoose handles data type validation for mongoDB
+
 ## Jest 
 
 - https://jestjs.io/
@@ -128,6 +131,11 @@ https://mongoosejs.com/docs/api.html#model_Model
 
 ## App
 - In our APP project, any environmental variable inside the .env file is available anywhere on the server but not on the browser
+
+
+## Typescript 
+- TypeScript does not check the type of data that comes from the server. 
+
 ## Further reading 
 - principle of least privilege:
 
