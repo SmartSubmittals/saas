@@ -10,7 +10,7 @@
 - jest.js
 
 
-last checkpoint: [API infrastructure review](https://builderbook.org/books/saas-boilerplate/user-model-mongoose-and-mongodb-mongodb-index-jest-testing-your-settings-page-file-upload-to-aws-s3#api-infrastructure-for-updating-profile)
+last checkpoint: [Google OAuth API](https://builderbook.org/books/saas-boilerplate/user-model-mongoose-and-mongodb-mongodb-index-jest-testing-your-settings-page-file-upload-to-aws-s3#google-oauth-api)
 
 
 ## Deployment 
