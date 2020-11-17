@@ -163,6 +163,32 @@ https://mongoosejs.com/docs/api.html#model_Model
 
 ## App
 - In our APP project, any environmental variable inside the .env file is available anywhere on the server but not on the browser
+- General pattern for page rendering:
+```javascript
+// some imports go here
+
+type Props = { user: { email: string; displayName: string } };
+
+class Index extends React.Component<Props> {
+  public static async getInitialProps() {
+    // some JS/TS code goes here
+  }
+
+  public render() {
+    return (
+      <Layout {...this.props}>
+        <Head>
+          <title>Index page</title>
+          <meta name="description" content="This is a description of the Index page" />
+        </Head>
+        // some HTML/React/Material-UI code goes here
+      </Layout>
+    );
+  }
+}
+
+export default Index;
+```
 
 
 ## Typescript 
