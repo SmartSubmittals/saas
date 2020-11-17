@@ -156,6 +156,10 @@ https://mongoosejs.com/docs/api.html#model_Model
 
 - Once the API server has signedRequest, we can send a second request to the AWS S3 server. signedRequest is a unique API endpoint to which our web application can send a file. We send our second request to the AWS S3 server. This second request contains an uploaded file and is sent to the signedRequest API endpoint. The final destination for the uploaded file is signedRequest.url. We save signedRequest.url as a new avatarUrl of a user document in our MongoDB database. 
 
+## Image Upload
+- Image file represented by a file-like object called a blob
+- We can adjust the parameters of this object (like resizing image)
+- https://developer.mozilla.org/en-US/docs/Web/API/Blob
 
 ## App
 - In our APP project, any environmental variable inside the .env file is available anywhere on the server but not on the browser

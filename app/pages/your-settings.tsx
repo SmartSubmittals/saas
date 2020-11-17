@@ -5,6 +5,7 @@ import {
   getSignedRequestForUploadApiMethod,
   uploadFileUsingSignedPutRequestApiMethod,
 } from '../lib/api/team-member';
+import { resizeImage } from '../lib/resizeImage';
 import Head from 'next/head';
 import NProgress from 'nprogress';
 import * as React from 'react';
@@ -155,6 +156,9 @@ class YourSettings extends React.Component<Props, State> {
   private uploadFile = async () => {
     const fileElement = document.getElementById('upload-file') as HTMLFormElement;
     const file = fileElement.files[0];
+    const resizedFile = await resizeImage(file, 128, 128);
+
+    // console.log(resizedFile);
 
     if (file == null) {
       notify('No file selected for upload.');
@@ -169,7 +173,7 @@ class YourSettings extends React.Component<Props, State> {
 
     const bucket = process.env.BUCKET_FOR_AVATARS;
 
-    console.log(bucket);
+    // console.log(bucket);
 
     const prefix = 'team-spongebob';
 
@@ -186,7 +190,7 @@ class YourSettings extends React.Component<Props, State> {
       });
 
       await uploadFileUsingSignedPutRequestApiMethod(
-        file,
+        resizedFile,
         responseFromApiServerForUpload.signedRequest,
         {
           'Cache-Control': 'max-age=2592000',
