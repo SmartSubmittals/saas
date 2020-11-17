@@ -50,7 +50,7 @@ class UserClass extends mongoose.Model {
 
       console.log('Static method');
 
-    const userDoc = await User.findOne({ slug }, 'email displayName', { lean: true });
+    const userDoc = await User.findOne({ slug }, 'email displayName avatarUrl', { lean: true });
     console.log('userDoc: ', userDoc)
 
     return userDoc;

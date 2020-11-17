@@ -73,3 +73,14 @@ class Index extends React.Component<Props> {
 }
 
 export default Index;
+
+/**
+ * Notes:
+ * - Key elements of the Index Page
+ * - The key elements of the Index page are:
+ * --> we defined types for the page component's props
+ * --> we defined the page component by extending React.Component
+ * --> we wrapped the page's content with the Layout component (which is a higher-order component)
+ * --> we defined Next's getInitialProps method that will be called when the page receives a request
+ * --> when the method getInitialProps is called, it then calls getUserBySlugApiMethod to get a user's information
+ */
