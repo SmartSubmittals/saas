@@ -189,7 +189,42 @@ class Index extends React.Component<Props> {
 
 export default Index;
 ```
+-  code in the API project always runs on the server and never on the browser (client). That's why you always see us referring to API as API server. Contrary to this, code in the APP project can run on the server and on the browser. Why is that? That's because the Next.js framework for React has both server-side and client-side rendered pages. In other words, it is important to understand where an initial request comes from.
 
+## Cookies, Session, and Auth
+- cookie only gets saved to the browser when an initial request to the page comes from the browser.
+- the session object gets created by the server and is not accessible on the browser. This object is a unique object. When an end user loads a page of your web application, the server creates a unique session object.
+- can store unique user-related data in the session object
+- When an end user has a cookie object saved to the browser, the API server will receive this cookie with an initial request because of the code we wrote earlier in /app/lib/api/sendRequestAndGetResponse.ts:
+```javascript
+if (request && request.headers && request.headers.cookie) {
+  headers.cookie = request.headers.cookie;have
+}
+```
+- The API server will use a unique cookie to find a unique session document in the database. From this unique session document, the API server will find a unique user document and save it to req.user. The API server will hold this user document in its memory as req.user. 
+- API server creates session, and session is only accessible on the server
+- Session Parameters:
+  - name
+  - secret
+  - resave
+  - saveUninitialized
+
+  - name: name will become the name of the cookie object that will be attached to the response. As we discussed earlier, our API server not only creates a session object, but it also creates a corresponding cookie object that gets sent to the browser and saved to the browser. The parameter is optional. If you have multiple projects and cookies, you should give informative names to the cookies. 
+  - secret: secret is a key that is used to encode a value for cookie. After cookie is saved to the browser, requests from the browser to our API server will contain cookie data. Our API server then decodes the value of cookie into session's id. Using the id of session, our API server finds a unique session document in our MongoDB database and then - since the session document contains the user id - finds and retrieves a unique user document from the datbase.
+  - resave: resave forces the session to be saved to the database, even if the session was not modified. We set it to false.
+  - saveUninitialized: saveUninitialized saves an uninitialized session to the database. An uninitialized session object is an object that was created but not modified in any way. We don't want our database to be overwhelmed with session documents that we don't use. Remember, every request to our API server will result in creating a session object, but we do not want to save any session object to the database. More on this later.
+
+- Cookie parameters:
+  - httpOnly
+  - maxAge
+  - secure
+  - httpOnly: httpOnly: true means that cookie can be saved to the browser only with an HTTP response from the API server.
+  - maxAge: maxAge: 14 * 24 * 60 * 60 * 1000 is how long a cookie will be stored on the browser, measured in milliseconds (unlike session.ttl, which is measured in seconds). 
+  secure: secure set to false makes sure that once cookie exists on the browser, requests that are coming from the browser to the API server will contain cookie, even if the protocol is HTTP and not HTTPS. If secure: true, then the website must be secured with an SSL certificate (HTTPS) to send cookie with a request to the server
+
+
+
+- Remember, every request to our API server will result in creating a session object, but we do not want to save any session object to the database
 
 ## Typescript 
 - TypeScript does not check the type of data that comes from the server. 

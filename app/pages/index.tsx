@@ -35,6 +35,9 @@ class Index extends React.Component<Props> {
           <Link href="/csr-page" as="/csr-page">
             <a>Go to CSR page</a>
           </Link>
+          <Link href="/your-settings" as="/your-settings">
+            <a>Go to Your Settings page</a>
+          </Link>
           <p />
           <Button
             variant="contained"
