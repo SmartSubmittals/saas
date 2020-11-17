@@ -11,6 +11,10 @@
 
 
 last checkpoint: [MongoDB index](https://builderbook.org/books/saas-boilerplate/user-model-mongoose-and-mongodb-mongodb-index-jest-testing-your-settings-page-file-upload-to-aws-s3#mongodb-index)
+
+
+## Deployment 
+- production-server folder will contain a compiled code that we will use to deploy our API server to AWS Elastic Beanstalk in Chapter 10.
 ## Server Side vs Client Side Rendering 
 - https://async-await.com/article/server-side-vs-client-side-rendering-in-react-apps
 
@@ -117,4 +121,7 @@ https://mongoosejs.com/docs/api.html#model_Model
 ## Jest 
 
 - https://jestjs.io/
+- Jest's configuration can be defined in the package.json file of your project, or through a jest.config.js, or jest.config.ts file
+-  testPathIgnorePatterns option allows us to not execute automated tests (in other words, ignore) located inside the book/4-begin/api/production-server folder.
+- The ts-jest preset that allows us to use Jest for TypeScript code.
 
