@@ -29,13 +29,14 @@ export default async function sendRequestAndGetResponse(path, opts: any = {}) {
 
   // console.log(`after: ${process.env.URL_API}${path}${qs}`);
 
-  console.log(`${process.env.URL_API}${path}${qs}`);
-  console.log(response.status);
-  console.log(response.statusText);
+  // console.log(`${process.env.URL_API}${path}${qs}`);
+  // console.log(response.status);
+  // console.log(response.statusText);
 
   const text = await response.text();
 
   if (response.status >= 400) {
+    console.error(text);
     throw new Error(response.status.toString());
   }
 

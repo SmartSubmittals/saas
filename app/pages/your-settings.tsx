@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import {
   getSignedRequestForUploadApiMethod,
   uploadFileUsingSignedPutRequestApiMethod,
-} from 'lib/api/team-member';
+} from '../lib/api/team-member';
 import Head from 'next/head';
 import NProgress from 'nprogress';
 import * as React from 'react';
@@ -169,7 +169,9 @@ class YourSettings extends React.Component<Props, State> {
 
     const bucket = process.env.BUCKET_FOR_AVATARS;
 
-    const prefix = 'team-builder-book';
+    console.log(bucket);
+
+    const prefix = 'team-spongebob';
 
     try {
       // call getSignedRequestForUploadApiMetho

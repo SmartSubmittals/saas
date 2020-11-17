@@ -17,7 +17,7 @@ async function signRequestForUpload({ fileName, fileType, prefix, bucket }) {
 
   const key = `${prefix}/${randomStringForPrefix}/${fileName}`;
 
-  const acl = 'private';
+  const acl = 'public-read';
 
   const params = {
     Bucket: bucket,
@@ -27,7 +27,12 @@ async function signRequestForUpload({ fileName, fileType, prefix, bucket }) {
     ACL: acl,
   };
 
-  const s3 = new aws.S3({ apiVersion: 'latest' });
+  const s3 = new aws.S3({
+    apiVersion: 'latest',
+    region: 'us-east-1',
+    accessKeyId: process.env.AWS_ACCESSKEYID,
+    secretAccessKey: process.env.AWS_SECRETACCESSKEY,
+  });
 
   return new Promise((resolve, reject) => {
     s3.getSignedUrl('putObject', params, (err, data) => {
