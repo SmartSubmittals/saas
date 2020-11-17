@@ -10,7 +10,7 @@
 - jest.js
 
 
-last checkpoint: [MongoDB index](https://builderbook.org/books/saas-boilerplate/user-model-mongoose-and-mongodb-mongodb-index-jest-testing-your-settings-page-file-upload-to-aws-s3#mongodb-index)
+last checkpoint: [API infrastructure review](https://builderbook.org/books/saas-boilerplate/user-model-mongoose-and-mongodb-mongodb-index-jest-testing-your-settings-page-file-upload-to-aws-s3#api-infrastructure-for-updating-profile)
 
 
 ## Deployment 
@@ -125,3 +125,7 @@ https://mongoosejs.com/docs/api.html#model_Model
 -  testPathIgnorePatterns option allows us to not execute automated tests (in other words, ignore) located inside the book/4-begin/api/production-server folder.
 - The ts-jest preset that allows us to use Jest for TypeScript code.
 
+## Further reading 
+- principle of least privilege:
+
+https://stackoverflow.com/questions/53153170/when-to-use-private-protected-methods-in-typescript-with-react
