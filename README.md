@@ -61,6 +61,21 @@ In contrast, Next.js, by default, does not compile code in the server/server.ts 
     The server sends a rendered page to the browser
     The browser displays a server-side rendered page with the user's email (on the browser)
 
+- Getting signed request API:
+
+    has static method updateProfile for User model
+    uses Mongoose API methods to define this static method
+    final req-res cycle is between API server and MongoDB Atlas server
+
+- Updating profile API:
+
+    has "standalone" signRequestForUpload method
+    uses AWS S3 API getSignedUrl method
+    final req-res cycle is between API server and AWS S3 server
+
+Why do we need to get this so-called "signed request"? Why can't we just upload the file to our server (for example, our API server)? We could do this, but then we would need to properly store files in MongoDB. In addition, when end users add or retrieve files, we would need to temporarily keep these files in the RAM memory of our MongoDB Atlas server and API server (also in our APP server's memory for server-side rendered pages). This is not a viable setup for a scalable web application. Thus, we outsource file management to AWS S3.
+
+
 ## Next && Express 
 We chose the Next.js framework for many benefits it offers: server-side rendering, routing for pages, compiling, etc. Our current web application has a hybrid server - there are two servers, and both listen to incoming requests:
 
@@ -129,12 +144,26 @@ https://mongoosejs.com/docs/api.html#model_Model
 - The ts-jest preset that allows us to use Jest for TypeScript code.
 
 
+## AWS
+- For any AWS API service, be it S3 or SES, we have to configure AWS with two environmental variables (AWS_ACCESSKEYID and AWS_SECRETACCESSKEY) and a region. AWS services are per region, meaning that your AWS dashboard and API setup may look completely different for different regions. 
+
+## AWS S3
+- AWS S3 requires us to generate a unique signedRequest using AWS_ACCESSKEYID and AWS_SECRETACCESSKEY parameters, among others. We have to generate signedRequest before uploading a file to AWS S3. AWS_ACCESSKEYID and AWS_SECRETACCESSKEY parameters can be found on your AWS dashboard.
+
+- We generate signedRequest by sending a request (that has all necessary information) from our API server to an AWS S3 server. This request is sent to the https://${bucket}.s3.amazonaws.com/${prefix}/${randomStringForPrefix}/${fileName} API endpoint (we discuss every parameter later in this section). The AWS S3 server sends back a response that contains signedRequest.
+
+- Once the API server has signedRequest, we can send a second request to the AWS S3 server. signedRequest is a unique API endpoint to which our web application can send a file. We send our second request to the AWS S3 server. This second request contains an uploaded file and is sent to the signedRequest API endpoint. The final destination for the uploaded file is signedRequest.url. We save signedRequest.url as a new avatarUrl of a user document in our MongoDB database. 
+
+
 ## App
 - In our APP project, any environmental variable inside the .env file is available anywhere on the server but not on the browser
 
 
 ## Typescript 
 - TypeScript does not check the type of data that comes from the server. 
+
+## CORS
+- need to add allowed origin from eventual production url on S3
 
 ## Further reading 
 - principle of least privilege:

@@ -1,6 +1,10 @@
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
+import {
+  getSignedRequestForUploadApiMethod,
+  uploadFileUsingSignedPutRequestApiMethod,
+} from 'lib/api/team-member';
 import Head from 'next/head';
 import NProgress from 'nprogress';
 import * as React from 'react';
@@ -149,7 +153,61 @@ class YourSettings extends React.Component<Props, State> {
   };
 
   private uploadFile = async () => {
-    // to be defined
+    const fileElement = document.getElementById('upload-file') as HTMLFormElement;
+    const file = fileElement.files[0];
+
+    if (file == null) {
+      notify('No file selected for upload.');
+      return;
+    }
+
+    const fileName = file.name;
+    const fileType = file.type;
+
+    NProgress.start();
+    this.setState({ disabled: true });
+
+    const bucket = process.env.BUCKET_FOR_AVATARS;
+
+    const prefix = 'team-builder-book';
+
+    try {
+      // call getSignedRequestForUploadApiMetho
+      // call uploadFileUsingSignedPutRequestApiMethod
+      // call updateProfileApiMethod
+
+      const responseFromApiServerForUpload = await getSignedRequestForUploadApiMethod({
+        fileName,
+        fileType,
+        prefix,
+        bucket,
+      });
+
+      await uploadFileUsingSignedPutRequestApiMethod(
+        file,
+        responseFromApiServerForUpload.signedRequest,
+        {
+          'Cache-Control': 'max-age=2592000',
+        },
+      );
+
+      this.setState({
+        newAvatarUrl: responseFromApiServerForUpload.url,
+      });
+
+      await updateProfileApiMethod({
+        name: this.state.newName,
+        avatarUrl: this.state.newAvatarUrl,
+      });
+
+      notify('You successfully uploaded new avatar.');
+    } catch (error) {
+      notify(error);
+    } finally {
+      fileElement.value = '';
+      this.setState({ disabled: false });
+      NProgress.done();
+    }
   };
 }
 
