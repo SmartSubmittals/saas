@@ -7,7 +7,7 @@ import * as React from 'react';
 
 import Layout from '../components/layout';
 
-import { getUserBySlugApiMethod } from '../lib/api/public';
+import { getUserBySlugApiMethod, updateProfileApiMethod } from '../lib/api/public';
 
 import notify from '../lib/notify';
 
@@ -20,7 +20,7 @@ type State = { newName: string; newAvatarUrl: string; disabled: boolean };
 
 class YourSettings extends React.Component<Props, State> {
   public static async getInitialProps() {
-    const slug = 'team-builder-book';
+    const slug = 'team-spongebob';
 
     const user = await getUserBySlugApiMethod(slug);
 
@@ -127,6 +127,8 @@ class YourSettings extends React.Component<Props, State> {
 
     // const { newName, newAvatarUrl } = this.state;
 
+    console.log(newName);
+
     if (!newName) {
       notify('Name is required');
       return;
@@ -136,7 +138,7 @@ class YourSettings extends React.Component<Props, State> {
     this.setState({ disabled: true });
 
     try {
-      // await updateProfileApiMethod({ name: newName, avatarUrl: newAvatarUrl });
+      await updateProfileApiMethod({ name: newName });
       notify('You successfully updated your profile.');
     } catch (error) {
       notify(error);

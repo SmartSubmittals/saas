@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { generateSlug } from '../../server/utils/slugify';
 
 mongoose.set('useFindAndModify', false);
 
@@ -48,7 +49,7 @@ interface UserModel extends mongoose.Model<UserDocument> {
 class UserClass extends mongoose.Model {
   public static async getUserBySlug({ slug }) {
 
-      console.log('Static method');
+    console.log('Static method: getUserBySlug');
 
     const userDoc = await User.findOne({ slug }, 'email displayName avatarUrl', { lean: true });
     console.log('userDoc: ', userDoc)
@@ -58,14 +59,16 @@ class UserClass extends mongoose.Model {
 
   public static async updateProfile({ userId, name, avatarUrl }) {
 
-      console.log('Static method');
+    console.log('Static method: updateProfile');
     const user = await User.findById(userId, 'slug displayName');
 
     const modifier = { displayName: user.displayName, avatarUrl, slug: user.slug };
 
+    console.log(user.slug);
+    
     if (name !== user.displayName) {
       modifier.displayName = name;
-      modifier.slug = name;
+      modifier.slug = await generateSlug(this, name);
     }
 
     return User.findByIdAndUpdate(userId, { $set: modifier }, { new: true, runValidators: true })

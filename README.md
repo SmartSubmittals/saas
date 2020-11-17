@@ -125,6 +125,9 @@ https://mongoosejs.com/docs/api.html#model_Model
 -  testPathIgnorePatterns option allows us to not execute automated tests (in other words, ignore) located inside the book/4-begin/api/production-server folder.
 - The ts-jest preset that allows us to use Jest for TypeScript code.
 
+
+## App
+- In our APP project, any environmental variable inside the .env file is available anywhere on the server but not on the browser
 ## Further reading 
 - principle of least privilege:
 

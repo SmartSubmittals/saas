@@ -24,12 +24,16 @@ import * as express from 'express';
  });
 
  router.post('/user/update-profile', async (req, res, next) => {
+   console.log('Express route: /user/update-profile');
+
    try {
      const { name, avatarUrl } = req.body;
 
      // define userId
 
-     const userId = 'someString';
+     const userId = '5fb1d18ebc1f10a7ebc2d6a8';
+     
+     console.log(name);
 
      const updatedUser = await User.updateProfile({
        userId: userId,
@@ -38,6 +42,7 @@ import * as express from 'express';
      });
 
      res.json({ updatedUser });
+
    } catch (err) {
      next(err);
    }
