@@ -28,3 +28,8 @@ export const getUserApiMethod = (opts = {}) =>
       opts,
     ),
   );
+
+export const emailLoginLinkApiMethod = ({ email }: { email: string }) =>
+  sendRequestAndGetResponse('/auth/email-login-link', {
+    body: JSON.stringify({ user: email }),
+  });

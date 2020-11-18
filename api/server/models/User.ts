@@ -78,6 +78,8 @@ interface UserModel extends mongoose.Model<UserDocument> {
     avatarUrl: string;
     googleToken: { accessToken?: string; refreshToken?: string };
   }): Promise<UserDocument>;
+
+  signInOrSignUpByPasswordless({ uid, email }: { uid: string; email: string }): Promise<UserDocument>;
 }
 
 class UserClass extends mongoose.Model {
@@ -157,6 +159,44 @@ class UserClass extends mongoose.Model {
 
     if (!emailTemplate) {
       throw new Error('Welcome email template not found');
+    }
+
+    try {
+      await sendEmail({
+        from: `Kelly from saas-app.builderbook.org <${process.env.EMAIL_SUPPORT_FROM_ADDRESS}>`,
+        to: [email],
+        subject: emailTemplate.subject,
+        body: emailTemplate.message,
+      });
+    } catch (err) {
+      console.error('Email sending error:', err);
+    }
+
+    return _.pick(newUser, this.publicFields());
+  }
+
+  public static async signInOrSignUpByPasswordless({ uid, email }) {
+    const user = await this.findOne({ email })
+      .select(this.publicFields().join(' '))
+      .setOptions({ lean: true });
+
+    if (user) {
+      throw Error('User already exists');
+    }
+
+    const slug = await generateSlug(this, email);
+
+    const newUser = await this.create({
+      _id: uid,
+      createdAt: new Date(),
+      email,
+      slug,
+    });
+
+    const emailTemplate = await getEmailTemplate('welcome', { userName: email });
+
+    if (!emailTemplate) {
+      throw new Error('Email template "welcome" not found in database.');
     }
 
     try {

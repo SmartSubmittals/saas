@@ -28,28 +28,34 @@ const EmailTemplate = mongoose.model<EmailTemplateDocument>(
 
 export async function insertTemplates() {
   const templates = [
-    {
-      name: 'welcome',
-      subject: 'Welcome to SaaS boilerplate',
-      message: `Welcome <%= userName %>,
-        <p>
-          Thanks for signing up on our <a href="https://github.com/async-labs/saas" target="blank">SaaS boilerplate</a>!
-        </p>
-        <p>
-          If you are learning how to build a SaaS web app, check out our 2 books:
-           <a href="https://builderbook.org" target="blank">Builder Book</a>
-           and
-           <a href="https://builderbook.org/book" target="blank">SaaS Boilerplate</a>.
-        </p>
-        <p>
-          Also check out
-          <a href="https://async-await.com" target="blank"> Async</a>
-          , our communication tool for small teams of software developers.
-        </p>
-        Kelly & Timur, Team Async
-      `,
-    },
-  ];
+        {
+            name: 'welcome',
+            subject: 'Welcome to SaaS boilerplate by Async',
+            message: `Welcome <%= userName %>,
+            <p>
+                Thanks for signing up on our <a href="https://github.com/async-labs/saas" target="blank">SaaS boilerplate</a>!
+            </p>
+            <p>
+                If you are learning how to build a SaaS web app, check out our 2 books:
+                <a href="https://builderbook.org" target="blank">Builder Book</a>
+                and
+                <a href="https://builderbook.org/book" target="blank">SaaS Boilerplate</a>.
+            </p>
+            <p>
+                Also check out
+                <a href="https://async-await.com" target="blank"> Async</a>
+                , our communication tool for small teams of software developers.
+            </p>
+            Kelly & Timur, Team Async
+            `,
+        },
+        {
+            name: 'login',
+            subject: 'Login link for saas-app.builderbook.org',
+            message: `
+            <p>Log into your account by clicking on this link: <a href="<%= loginURL %>"><%= loginURL %></a>.</p>`,
+        },
+    ];
 
   for (const t of templates) {
     const et = await EmailTemplate.findOne({ name: t.name });

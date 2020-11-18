@@ -7,6 +7,7 @@ import * as mongoSessionStore from 'connect-mongo';
 import api from './api';
 import { setupGoogle } from './google-auth';
 import { insertTemplates } from './models/EmailTemplate';
+import { setupPasswordless } from './passwordless-auth';
 // import logger from './logs';
 
 
@@ -58,9 +59,10 @@ const sessionMiddleware = session(sessionOptions);
 server.use(sessionMiddleware);
 
 
-// set up google 
+// set up google & passwordless
 
 setupGoogle({ server });
+setupPasswordless({ server });
 
 // api server
 
