@@ -10,7 +10,7 @@
 - jest.js
 
 
-last checkpoint: [Google OAuth API](https://builderbook.org/books/saas-boilerplate/user-model-mongoose-and-mongodb-mongodbz-index-jest-testing-your-settings-page-file-upload-to-aws-s3#google-oauth-api)
+last checkpoint: [Authentication HOC withAuth](https://builderbook.org/books/saas-boilerplate/login-page-session-and-cookie-google-oauth-api-authentication-hoc-withauth-firstgriditem-logic-in-app-hoc#authentication-hoc-withauth)
 
 
 ## Deployment 
