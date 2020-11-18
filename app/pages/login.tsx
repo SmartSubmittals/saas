@@ -2,6 +2,7 @@ import Head from 'next/head';
 import React from 'react';
 import LoginButton from '../components/common/LoginButton';
 import Layout from '../components/layout';
+import withAuth from '../lib/withAuth';
 
 class Login extends React.Component {
   public render() {
@@ -9,8 +10,11 @@ class Login extends React.Component {
       <Layout {...this.props}>
         <div style={{ textAlign: 'center', margin: '0 20px' }}>
           <Head>
-            <title>Log in to SaaS boilerplate</title>
-            <meta name="description" content="Login and signup page for SaaS boilerplate demo" />
+            <title>Log in to SaaS boilerplate by Async</title>
+            <meta
+              name="description"
+              content="Login and signup page for SaaS boilerplate demo by Async"
+            />
           </Head>
           <br />
           <p style={{ margin: '45px auto', fontSize: '44px', fontWeight: 400 }}>Log in</p>
@@ -24,4 +28,4 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default withAuth(Login, { logoutRequired: true });

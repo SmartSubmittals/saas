@@ -1,20 +1,23 @@
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
-import {
-  getSignedRequestForUploadApiMethod,
-  uploadFileUsingSignedPutRequestApiMethod,
-} from '../lib/api/team-member';
-import { resizeImage } from '../lib/resizeImage';
 import Head from 'next/head';
 import NProgress from 'nprogress';
 import * as React from 'react';
 
 import Layout from '../components/layout';
 
-import { getUserApiMethod, updateProfileApiMethod } from '../lib/api/public';
+import { updateProfileApiMethod } from '../lib/api/public';
+import {
+  getSignedRequestForUploadApiMethod,
+  uploadFileUsingSignedPutRequestApiMethod,
+} from '../lib/api/team-member';
+
+import { resizeImage } from '../lib/resizeImage';
 
 import notify from '../lib/notify';
+
+import withAuth from '../lib/withAuth';
 
 type Props = {
   isMobile: boolean;
@@ -24,22 +27,29 @@ type Props = {
 type State = { newName: string; newAvatarUrl: string; disabled: boolean };
 
 class YourSettings extends React.Component<Props, State> {
-  public static async getInitialProps(ctx) {
-    const headers: any = {};
+  // public static async getInitialProps(ctx) {
+  //   const headers: any = {};
 
-    if (ctx.req.headers && ctx.req.headers.cookie) {
-      headers.cookie = ctx.req.headers.cookie;
-    }
+  //   if (ctx.req.headers && ctx.req.headers.cookie) {
+  //     headers.cookie = ctx.req.headers.cookie;
+  //   }
 
-    // const slug = 'team-spongebob';
-    // const user = await getUserBySlugApiMethod(slug);
+  //   const user = await getUserApiMethod({ headers });
 
-    const user = await getUserApiMethod({ headers });
+  //   console.log(user);
 
-    console.log(user);
+  //   return { ...user };
+  // }
 
-    return { ...user };
-  }
+  // public static async getInitialProps() {
+  //   const slug = 'team-builder-book';
+
+  //   const user = await getUserBySlugApiMethod(slug);
+
+  //   console.log(user);
+
+  //   return { ...user };
+  // }
 
   constructor(props) {
     super(props);
@@ -70,14 +80,14 @@ class YourSettings extends React.Component<Props, State> {
         >
           <h3>Your Settings</h3>
           <h4 style={{ marginTop: '40px' }}>Your account</h4>
-          <p>
+          <ul>
             <li>
               Your email: <b>{user.email}</b>
             </li>
             <li>
               Your name: <b>{user.displayName}</b>
             </li>
-          </p>
+          </ul>
           <form onSubmit={this.onSubmit} autoComplete="off">
             <h4>Your name</h4>
             <TextField
@@ -96,7 +106,7 @@ class YourSettings extends React.Component<Props, State> {
           </form>
 
           <br />
-          <h4>Your avatar</h4>
+          <h4>Your photo</h4>
           <Avatar
             src={newAvatarUrl}
             style={{
@@ -135,9 +145,7 @@ class YourSettings extends React.Component<Props, State> {
   private onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const { newName } = this.state;
-
-    // const { newName, newAvatarUrl } = this.state;
+    const { newName, newAvatarUrl } = this.state;
 
     console.log(newName);
 
@@ -150,7 +158,11 @@ class YourSettings extends React.Component<Props, State> {
     this.setState({ disabled: true });
 
     try {
-      await updateProfileApiMethod({ name: newName });
+      await updateProfileApiMethod({
+        name: newName,
+        avatarUrl: newAvatarUrl,
+      });
+
       notify('You successfully updated your profile.');
     } catch (error) {
       notify(error);
@@ -163,9 +175,6 @@ class YourSettings extends React.Component<Props, State> {
   private uploadFile = async () => {
     const fileElement = document.getElementById('upload-file') as HTMLFormElement;
     const file = fileElement.files[0];
-    const resizedFile = await resizeImage(file, 128, 128);
-
-    // console.log(resizedFile);
 
     if (file == null) {
       notify('No file selected for upload.');
@@ -180,15 +189,9 @@ class YourSettings extends React.Component<Props, State> {
 
     const bucket = process.env.BUCKET_FOR_AVATARS;
 
-    // console.log(bucket);
-
     const prefix = 'team-spongebob';
 
     try {
-      // call getSignedRequestForUploadApiMetho
-      // call uploadFileUsingSignedPutRequestApiMethod
-      // call updateProfileApiMethod
-
       const responseFromApiServerForUpload = await getSignedRequestForUploadApiMethod({
         fileName,
         fileType,
@@ -196,12 +199,15 @@ class YourSettings extends React.Component<Props, State> {
         bucket,
       });
 
+      const resizedFile = await resizeImage(file, 128, 128);
+
+      console.log(file);
+      console.log(resizedFile);
+
       await uploadFileUsingSignedPutRequestApiMethod(
         resizedFile,
         responseFromApiServerForUpload.signedRequest,
-        {
-          'Cache-Control': 'max-age=2592000',
-        },
+        { 'Cache-Control': 'max-age=2592000' },
       );
 
       this.setState({
@@ -224,4 +230,4 @@ class YourSettings extends React.Component<Props, State> {
   };
 }
 
-export default YourSettings;
+export default withAuth(YourSettings);
