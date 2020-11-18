@@ -12,7 +12,7 @@ import * as React from 'react';
 
 import Layout from '../components/layout';
 
-import { getUserBySlugApiMethod, updateProfileApiMethod } from '../lib/api/public';
+import { getUserApiMethod, updateProfileApiMethod } from '../lib/api/public';
 
 import notify from '../lib/notify';
 
@@ -25,9 +25,10 @@ type State = { newName: string; newAvatarUrl: string; disabled: boolean };
 
 class YourSettings extends React.Component<Props, State> {
   public static async getInitialProps() {
-    const slug = 'team-spongebob';
+    // const slug = 'team-spongebob';
+    // const user = await getUserBySlugApiMethod(slug);
 
-    const user = await getUserBySlugApiMethod(slug);
+    const user = await getUserApiMethod();
 
     console.log(user);
 

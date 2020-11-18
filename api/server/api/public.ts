@@ -16,10 +16,16 @@ declare module 'express-session' {
   }
 }
 
+router.get('/get-user', (req, res) => {
+  console.log(`req.user inside Express route: ${req.user}`);
+  res.json({ user: req.user || null });
+});
+
+
 router.post('/get-user-by-slug', async (req, res, next) => {
   console.log('Express route: /get-user-by-slug');
 
-  req.session.foo= 'bar';
+  // req.session.foo= 'bar';
 
   try {
     const { slug } = req.body;
@@ -58,5 +64,6 @@ router.post('/user/update-profile', async (req, res, next) => {
     next(err);
   }
  });
+ 
 
  export default router;

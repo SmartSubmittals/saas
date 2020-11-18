@@ -5,6 +5,7 @@ import * as mongoose from 'mongoose';
 import * as session from 'express-session';
 import * as mongoSessionStore from 'connect-mongo';
 import api from './api';
+import { setupGoogle } from './google-auth';
 // import logger from './logs';
 
 
@@ -51,6 +52,11 @@ const sessionOptions = {
 
 const sessionMiddleware = session(sessionOptions);
 server.use(sessionMiddleware);
+
+
+// set up google 
+
+setupGoogle({ server });
 
 // api server
 
