@@ -6,6 +6,7 @@ import * as session from 'express-session';
 import * as mongoSessionStore from 'connect-mongo';
 import api from './api';
 import { setupGoogle } from './google-auth';
+import { insertTemplates } from './models/EmailTemplate';
 // import logger from './logs';
 
 
@@ -19,6 +20,9 @@ const options = {
 // initialization
 
 mongoose.connect(process.env.MONGO_URL, options);
+
+// insert email templates to mongodb
+insertTemplates();
 
 const server = express();
 

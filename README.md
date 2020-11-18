@@ -251,6 +251,32 @@ if (request && request.headers && request.headers.cookie) {
   -  passport does multiple things. It generates a unique URL for redirecting an end user to Google's website. Passport is also responsible for sending requests to the browser and the Google OAuth server. How did we know when to call the passport.authenticate method? Because the passport official docs told us to call this method two times: once inside each Express route. 
   - passport populates req.user on our API server, not on APP. If we had a single-project architecture, we would be done and ready for testing. However, we have two projects. Thus, we need to pass user data from API to APP. We need to create an API method that will send a request from APP to API,as well as an Express route that sends a response containing user data from API to APP.
 
+## AWS SES 
+- In this book, we hardcode email templates into the code. When you start your API server (either locally or in production), our goal is to make the API server insert these hardcoded templates into our MongoDB database.
+
+  - On the browser, a new end user clicks the LoginButton component on the Login page of our web application
+
+  - This triggers an entire cascades of redirects, methods, and req-res cycles
+
+  - Eventually, the static method signInOrSignUpViaGoogle of our User model gets called
+
+  - Inside the signInOrSignUpViaGoogle method, we will call two methods: getEmailTemplate and sendEmail
+
+  - getEmailTemplate will search for the welcome email template inside the emailtemplates collection of our MongoDB database
+
+  - if getEmailTemplate successfully finds the welcome email template, it adds variable parameters to the template (in our case, the user's displayName)
+
+  - next, the sendEmail method gets called with multiple arguments (email template is one of those arguments)
+
+  - sendEmail calls the ses.sendEmail AWS SES API method:
+
+  - https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/SES.html#sendEmail-property
+
+  - ses.sendEmail sends a request with the POST method from our API server to the AWS SES server
+
+  - The AWS SES server sends an email to an Email server. In our case, it is Gmail server.
+
+  - A newly signed-up user finds our welcome email inside their inbox web application on the browser. In our case, we will be checking our Gmail inbox on the browser.
 
 ## Further reading 
 - principle of least privilege:
