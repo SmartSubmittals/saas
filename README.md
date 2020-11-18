@@ -10,7 +10,7 @@
 - jest.js
 
 
-last checkpoint: [Authentication HOC withAuth](https://builderbook.org/books/saas-boilerplate/login-page-session-and-cookie-google-oauth-api-authentication-hoc-withauth-firstgriditem-logic-in-app-hoc#authentication-hoc-withauth)
+last checkpoint: [Application State](https://builderbook.org/books/saas-boilerplate/application-state-app-hoc-store-and-mobx-data-store-for-user-toggle-theme-api-team-invitation)
 
 
 ## Deployment 
