@@ -67,15 +67,18 @@ function setupGoogle({ server }) {
     };
 
     passport.authenticate('google', options)(req, res, next);
+
+    console.log('/auth/google');
   });
 
   server.get(
-    '/oauth2callback',
-    passport.authenticate('google', {
-      failureRedirect: '/login',
+        '/oauth2callback',
+        passport.authenticate('google', {
+        failureRedirect: '/login',
     }),
     (_, res) => {
-      res.redirect(`${process.env.URL_APP}/your-settings`);
+            console.log('/oauth2callback');
+            res.redirect(`${process.env.URL_APP}/your-settings`);
     },
   );
 }

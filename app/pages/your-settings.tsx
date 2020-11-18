@@ -24,11 +24,17 @@ type Props = {
 type State = { newName: string; newAvatarUrl: string; disabled: boolean };
 
 class YourSettings extends React.Component<Props, State> {
-  public static async getInitialProps() {
+  public static async getInitialProps(ctx) {
+    const headers: any = {};
+
+    if (ctx.req.headers && ctx.req.headers.cookie) {
+      headers.cookie = ctx.req.headers.cookie;
+    }
+
     // const slug = 'team-spongebob';
     // const user = await getUserBySlugApiMethod(slug);
 
-    const user = await getUserApiMethod();
+    const user = await getUserApiMethod({ headers });
 
     console.log(user);
 

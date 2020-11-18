@@ -256,3 +256,8 @@ if (request && request.headers && request.headers.cookie) {
 - principle of least privilege:
 
 https://stackoverflow.com/questions/53153170/when-to-use-private-protected-methods-in-typescript-with-react
+
+
+- ```ctx``` (context) properties:
+    - We can access a request and its headers with ctx.req and ctx.req.headers, respectively. We can access a cookie saved to the browser with ctx.req.headers.cookie. We took the value of ctx.req.headers.cookie and assigned it to headers.cookie.
+    - app/lib/api/sendRequestAndGetResponse.ts will indeed take an opts argument, extract cookie (if any) and send it to our API server

@@ -2,7 +2,7 @@ import * as express from 'express';
 
 import User from '../models/User';
 
-const router = express.Router();
+const router: express.Router = express.Router();
 
 // router.get('/get-user', (req, res) => {
 //   res.json({ user: req.user || null });
@@ -13,6 +13,17 @@ const router = express.Router();
 declare module 'express-session' {
   interface SessionData {
     foo: string
+  }
+}
+
+// had to add custom typing for request object
+declare global {
+  namespace Express {
+    interface Request {
+      user: {
+        id: string
+      }
+    }
   }
 }
 
@@ -45,15 +56,11 @@ router.post('/user/update-profile', async (req, res, next) => {
 
   try {
     const { name, avatarUrl } = req.body;
-
-    // define userId
-
-    const userId = '5fb1d18ebc1f10a7ebc2d6a8';
     
     console.log(name);
 
     const updatedUser = await User.updateProfile({
-      userId: userId,
+      userId: req.user.id,
       name,
       avatarUrl,
     });
