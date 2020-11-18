@@ -3,6 +3,7 @@ import * as mongoose from 'mongoose';
 import { generateSlug } from '../utils/slugify';
 import getEmailTemplate from './EmailTemplate';
 import sendEmail from '../aws-ses';
+import { addToMailchimp } from '../mailchimp';
 
 mongoose.set('useFindAndModify', false);
 
@@ -172,6 +173,12 @@ class UserClass extends mongoose.Model {
       console.error('Email sending error:', err);
     }
 
+    try {
+      await addToMailchimp({ email, listName: 'signups' });
+    } catch (error) {
+      console.error('Mailchimp error:', error);
+    }
+
     return _.pick(newUser, this.publicFields());
   }
 
@@ -208,6 +215,12 @@ class UserClass extends mongoose.Model {
       });
     } catch (err) {
       console.error('Email sending error:', err);
+    }
+
+    try {
+      await addToMailchimp({ email, listName: 'signups' });
+    } catch (error) {
+      console.error('Mailchimp error:', error);
     }
 
     return _.pick(newUser, this.publicFields());
