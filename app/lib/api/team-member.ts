@@ -23,6 +23,14 @@ export const uploadFileUsingSignedPutRequestApiMethod = (file, signedRequest, he
   });
 
 /**
+ * update profile information, need to be logged in so this was moved from public.ts
+ */
+export const updateProfileApiMethod = (data) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/user/update-profile`, {
+    body: JSON.stringify(data),
+  });
+
+/**
  * Notes:
  * - We place the code to a team-member.ts file instead of public.ts, because uploading files is allowed only for logged-in users.
  * - If a user is logged in to our web application, we call this user a Team Member.

@@ -2,6 +2,8 @@ import * as express from 'express';
 
 import { signRequestForUpload } from '../aws-s3';
 
+import User from '../models/User';
+
 const router = express.Router();
 /**
  * check if req.user exists upstream of Express routes. 
@@ -38,6 +40,29 @@ router.post('/aws/get-signed-request-for-upload-to-s3', async (req, res, next) =
     next(err);
   }
 });
+
+// moving this route to be for only logged in users
+router.post('/user/update-profile', async (req, res, next) => {
+  console.log('Express route: /user/update-profile');
+
+  try {
+    const { name, avatarUrl } = req.body;
+    
+    console.log(name);
+
+    const updatedUser = await User.updateProfile({
+      userId: req.user.id,
+      name,
+      avatarUrl,
+    });
+
+    res.json({ updatedUser });
+
+  } catch (err) {
+    next(err);
+  }
+ });
+ 
 
 export default router;
 

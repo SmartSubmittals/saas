@@ -8,6 +8,7 @@
 - mongoDB
 - mongoose
 - jest.js
+- mobx 
 
 
 last checkpoint: [Application State](https://builderbook.org/books/saas-boilerplate/application-state-app-hoc-store-and-mobx-data-store-for-user-toggle-theme-api-team-invitation)
@@ -289,6 +290,11 @@ if (request && request.headers && request.headers.cookie) {
 - All code is on our API server, there is no code on our APP project. In other words, Mailchimp API is server-only infrastructure.
 - We will use the fetch method that we learned about in Chapter 3. In Chapter 3, we used fetch to define sendRequestAndGetResponse that sends requests and receives responses. For server-side rendered pages, fetch deals with a req-res cycle between the APP server and API server. For client-side rendered pages, fetch deals with a req-res cycle between the APP browser and API server. In Mailchimp API, we will use fetch to send a request with the POST method from our API server to the Mailchimp server.
 - Once we define a server-side addToMailchimp method, we simply add it to two static methods for our User model: signInOrSignUpViaGoogle and signInOrSignUpByPasswordless.
+
+## mobx 
+- why complicate things (add an extra step) and have a data store? As we discussed earlier, one benefit is to be productive as a developer. On any page, we can access this.props.store.currentUser and this.props.store.currentUser.updateProfile methods - no need to call getInitialProps and define the user prop for every page. A second benefit is that if data displayed on the UI changes in the store, the UI will get updated automatically and reactively
+- An end user loads a page in a new browser tab, the browser sends a request to our API server, mobx creates store on the server, the page uses store to populate data, our API server renders the page with data and sends this rendered page to the browser, and finally mobX deletes store. So, as you can see, there is no reason for mobx to hold a clone of store in the server's memory and wait for any changes in the data inside store. Simply put, there are no user actions to change any data inside store, and store gets created and deleted per request.
+- Note that for a component to re-render automatically and reactively when its corresponding data changes, it has to wrapped by the observer HOC.
 
 ## Further reading 
 - principle of least privilege:
