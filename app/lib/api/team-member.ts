@@ -31,6 +31,14 @@ export const updateProfileApiMethod = (data) =>
   });
 
 /**
+ * toggle theme request to api server
+ */
+export const toggleThemeApiMethod = (data) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/user/toggle-theme`, {
+    body: JSON.stringify(data),
+  });
+
+/**
  * Notes:
  * - We place the code to a team-member.ts file instead of public.ts, because uploading files is allowed only for logged-in users.
  * - If a user is logged in to our web application, we call this user a Team Member.

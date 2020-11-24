@@ -73,6 +73,8 @@ class MyApp extends App<{ isMobile: boolean }> {
     const store = this.store;
     console.log(store.currentUser);
 
+    console.log('Dark theme: ', store.currentUser.darkTheme);
+
     return (
       <ThemeProvider
         theme={store.currentUser && store.currentUser.darkTheme ? themeDark : themeLight}

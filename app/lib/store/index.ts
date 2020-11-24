@@ -43,6 +43,7 @@ decorate(Store, {
   currentUrl: observable,
 
   changeCurrentUrl: action,
+  setCurrentUser: action,
 });
 
 let store: Store = null;
