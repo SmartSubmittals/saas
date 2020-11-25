@@ -76,9 +76,17 @@ function setupGoogle({ server }) {
         passport.authenticate('google', {
         failureRedirect: '/login',
     }),
-    (_, res) => {
-            console.log('/oauth2callback');
-            res.redirect(`${process.env.URL_APP}/your-settings`);
+    (req, res) => {
+        console.log('/oauth2callback');
+        let redirectUrlAfterLogin;
+
+        if (req.user && !req.user.defaultTeamSlug) {
+          redirectUrlAfterLogin = '/create-team';
+        } else {
+          redirectUrlAfterLogin = `/your-settings`;
+        }
+
+        res.redirect(`${process.env.URL_APP}${redirectUrlAfterLogin}`);
     },
   );
 

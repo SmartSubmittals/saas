@@ -1,8 +1,10 @@
 import * as mobx from 'mobx';
 import { action, decorate, observable } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
-
+import { getTeamListApiMethod } from '../api/team-member';
+import { addTeamApiMethod } from '../api/team-leader';
 import { User } from './user';
+import { Team } from './team';
 
 useStaticRendering(typeof window === 'undefined');
 
@@ -14,6 +16,8 @@ class Store {
   public currentUser?: User = null;
   public currentUrl = '';
 
+  public currentTeam?: Team;
+
   constructor({ initialState = {}, isServer }: { initialState?: any; isServer: boolean }) {
     this.isServer = !!isServer;
 
@@ -23,6 +27,13 @@ class Store {
     this.setCurrentUser(initialState.user);
 
     this.currentUrl = initialState.currentUrl || '';
+
+    if (initialState.teamSlug || (initialState.user && initialState.user.defaultTeamSlug)) {
+      this.setCurrentTeam(
+        initialState.teamSlug || initialState.user.defaultTeamSlug,
+        initialState.teams,
+      );
+    }
   }
 
   public changeCurrentUrl(url: string) {
@@ -36,14 +47,51 @@ class Store {
       this.currentUser = null;
     }
   }
+
+  public async addTeam({ name, avatarUrl }: { name: string; avatarUrl: string }): Promise<Team> {
+    const data = await addTeamApiMethod({ name, avatarUrl });
+    const team = new Team({ store: this, ...data });
+
+    return team;
+  }
+
+  public async setCurrentTeam(slug: string, initialTeams: any[]) {
+    if (this.currentTeam) {
+      if (this.currentTeam.slug === slug) {
+        return;
+      }
+    }
+
+    let found = false;
+
+    const teams = initialTeams || (await getTeamListApiMethod()).teams;
+
+    for (const team of teams) {
+      if (team.slug === slug) {
+        found = true;
+        this.currentTeam = new Team({ ...team, store: this });
+
+        // const users =
+        //   team.initialMembers || (await getTeamMembersApiMethod(this.currentTeam._id)).users;
+
+        break;
+      }
+    }
+
+    if (!found) {
+      this.currentTeam = null;
+    }
+  }
 }
 
 decorate(Store, {
   currentUser: observable,
   currentUrl: observable,
+  currentTeam: observable,
 
   changeCurrentUrl: action,
   setCurrentUser: action,
+  setCurrentTeam: action,
 });
 
 let store: Store = null;

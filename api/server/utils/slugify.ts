@@ -32,4 +32,20 @@ async function generateSlug(Model, name, filter = {}) {
   return createUniqueSlug(Model, origSlug, 1, filter);
 }
 
-export { generateSlug };
+/**
+ * generateNumberSlug checks if there is a Team document with slug: 1, slug: 2 and so forth. 
+ * if there is a Team document with slug: 5 but no document with slug: 6, then this method returns 6
+ */
+async function generateNumberSlug(Model, filter = {}, n = 1) {
+  const obj = await Model.findOne({ slug: n, ...filter })
+    .select('_id')
+    .setOptions({ lean: true });
+
+  if (!obj) {
+    return `${n}`;
+  }
+
+  return generateNumberSlug(Model, filter, ++n);
+}
+
+export { generateSlug, generateNumberSlug };

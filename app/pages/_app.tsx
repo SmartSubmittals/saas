@@ -3,6 +3,7 @@ import { ThemeProvider } from '@material-ui/styles';
 import { Provider } from 'mobx-react';
 import App from 'next/app';
 import React from 'react';
+import { getInitialDataApiMethod } from '../lib/api/team-member';
 
 import { themeDark, themeLight } from '../lib/theme';
 import { getUserApiMethod } from '../lib/api/public';
@@ -12,12 +13,29 @@ import { getStore, initializeStore, Store } from '../lib/store';
 class MyApp extends App<{ isMobile: boolean }> {
   public static async getInitialProps({ Component, ctx }) {
     let firstGridItem = true;
+    let teamRequired = false;
 
-    if (ctx.pathname.includes('/login')) {
+    if (ctx.pathname.includes('/login') || ctx.pathname.includes('/create-team')) {
       firstGridItem = false;
     }
 
-    const pageProps = { isMobile: isMobile({ req: ctx.req }), firstGridItem };
+    if (
+      ctx.pathname.includes('/team-settings') ||
+      ctx.pathname.includes('/discussion') ||
+      ctx.pathname.includes('/billing')
+    ) {
+      teamRequired = true;
+    }
+
+    const { teamSlug } = ctx.query;
+    console.log(`ctx.query.teamSlug: ${teamSlug}`);
+
+    const pageProps = {
+      isMobile: isMobile({ req: ctx.req }),
+      firstGridItem,
+      teamSlug,
+      teamRequired,
+    };
 
     if (Component.getInitialProps) {
       Object.assign(pageProps, await Component.getInitialProps(ctx));
@@ -25,7 +43,8 @@ class MyApp extends App<{ isMobile: boolean }> {
 
     const appProps = { pageProps };
 
-    if (getStore()) {
+    const store = getStore();
+    if (store) {
       return appProps;
     }
 
@@ -44,9 +63,21 @@ class MyApp extends App<{ isMobile: boolean }> {
       console.log(error);
     }
 
+    let initialData = {};
+    if (userObj) {
+      try {
+        initialData = await getInitialDataApiMethod({
+          request: ctx.req,
+          data: { teamSlug },
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     return {
       ...appProps,
-      initialState: { user: userObj, currentUrl: ctx.asPath },
+      initialState: { user: userObj, currentUrl: ctx.asPath, teamSlug, ...initialData },
     };
   }
 
@@ -72,8 +103,6 @@ class MyApp extends App<{ isMobile: boolean }> {
     const { Component, pageProps } = this.props;
     const store = this.store;
     console.log(store.currentUser);
-
-    console.log('Dark theme: ', store.currentUser.darkTheme);
 
     return (
       <ThemeProvider

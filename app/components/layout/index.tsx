@@ -1,10 +1,17 @@
 import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+
+import Link from 'next/link';
 import React from 'react';
-import { Store } from '../../lib/store';
+
 import MenuWithLinks from '../common/MenuWithLinks';
 import Confirmer from '../common/Confirmer';
 import Notifier from '../common/Notifier';
+
+import { Store } from '../../lib/store';
+
+const dev = process.env.NODE_ENV !== 'production';
 
 const styleGrid = {
   width: '100vw',
@@ -20,27 +27,21 @@ const styleGridIsMobile = {
   padding: '0px 0px 0px 10px',
 };
 
-type Props = {
-  firstGridItem?: boolean;
+function LayoutWrapper({
+  children,
+  isMobile,
+  firstGridItem,
+  store,
+  isThemeDark,
+}: {
   children: React.ReactNode;
-  isMobile?: boolean;
-  store?: Store;
-};
-
-class Layout extends React.Component<Props> {
-  public render() {
-    const { firstGridItem, children, isMobile, store } = this.props;
-
-    const { currentUser } = store;
-
-    const isThemeDark = currentUser && currentUser.darkTheme === true;
-
-    console.log(isThemeDark);
-    console.log(this.props.store.currentUser.darkTheme);
-
-    // console.log(isMobile);
-
-    return (
+  isMobile: boolean;
+  firstGridItem: boolean;
+  store: Store;
+  isThemeDark: boolean;
+}) {
+  return (
+    <React.Fragment>
       <Grid
         container
         direction="row"
@@ -51,7 +52,7 @@ class Layout extends React.Component<Props> {
         {firstGridItem ? (
           <Grid
             item
-            sm={3}
+            sm={2}
             xs={12}
             style={{
               borderRight: '1px #707070 solid',
@@ -90,9 +91,16 @@ class Layout extends React.Component<Props> {
               <MenuWithLinks
                 options={[
                   {
-                    text: 'Index page',
-                    href: '/',
-                    highlighterSlug: '/',
+                    text: 'Team Settings',
+                    href: `/team-settings?teamSlug=${store.currentTeam.slug}`,
+                    as: `/team/${store.currentTeam.slug}/team-settings`,
+                    simple: true,
+                  },
+                  {
+                    text: 'Billing',
+                    href: `/billing?teamSlug=${store.currentTeam.slug}`,
+                    as: `/team/${store.currentTeam.slug}/billing`,
+                    simple: true,
                   },
                   {
                     text: 'Your Settings',
@@ -104,14 +112,14 @@ class Layout extends React.Component<Props> {
                   },
                   {
                     text: 'Log out',
-                    href: `${process.env.URL_API}/logout`,
-                    as: `${process.env.URL_API}/logout`,
+                    href: `${dev ? process.env.URL_API : process.env.PRODUCTION_URL_API}/logout`,
+                    as: `${dev ? process.env.URL_API : process.env.PRODUCTION_URL_API}/logout`,
                     externalServer: true,
                   },
                 ]}
               >
                 <Avatar
-                  src={'https://storage.googleapis.com/async-await/default-user.png'}
+                  src={store.currentUser.avatarUrl}
                   alt="Add username here later in the book"
                   style={{
                     margin: '20px auto',
@@ -129,12 +137,106 @@ class Layout extends React.Component<Props> {
             </div>
             <hr />
             <p />
-            <p />
+            <p />{' '}
           </Grid>
         ) : null}
-        <Grid item sm={firstGridItem ? 9 : 12} xs={12}>
+
+        {children}
+      </Grid>
+      <Notifier />
+      <Confirmer />
+    </React.Fragment>
+  );
+}
+
+type Props = {
+  children: React.ReactNode;
+  isMobile?: boolean;
+  firstGridItem?: boolean;
+  store?: Store;
+  teamRequired?: boolean;
+};
+
+class Layout extends React.Component<Props> {
+  public render() {
+    const { children, isMobile, firstGridItem, store, teamRequired } = this.props;
+
+    const { currentUser, currentTeam } = store;
+
+    const isThemeDark = currentUser && currentUser.darkTheme === true;
+
+    // console.log(this.props.store.currentUser.darkTheme);
+
+    // const isThemeDark = false;
+
+    // console.log(isMobile);
+
+    // console.log(currentTeam);
+
+    if (!currentUser) {
+      return (
+        <LayoutWrapper
+          firstGridItem={firstGridItem}
+          isMobile={isMobile}
+          isThemeDark={isThemeDark}
+          store={store}
+        >
+          <Grid item sm={12} xs={12}>
+            {children}
+          </Grid>
+        </LayoutWrapper>
+      );
+    }
+
+    if (!currentTeam) {
+      if (teamRequired) {
+        return (
+          <LayoutWrapper
+            firstGridItem={firstGridItem}
+            isMobile={isMobile}
+            isThemeDark={isThemeDark}
+            store={store}
+          >
+            <Grid item sm={10} xs={12}>
+              <div style={{ padding: '20px' }}>
+                Select existing team or create a new team.
+                <p />
+                <Link href="/create-team" as="/create-team">
+                  <Button variant="outlined" color="primary">
+                    Create new team
+                  </Button>
+                </Link>
+              </div>
+            </Grid>
+          </LayoutWrapper>
+        );
+      } else {
+        console.log('team not required');
+        return (
+          <LayoutWrapper
+            firstGridItem={firstGridItem}
+            isMobile={isMobile}
+            isThemeDark={isThemeDark}
+            store={store}
+          >
+            <Grid item sm={10} xs={12}>
+              {children}
+            </Grid>
+          </LayoutWrapper>
+        );
+      }
+    }
+
+    return (
+      <LayoutWrapper
+        firstGridItem={firstGridItem}
+        isMobile={isMobile}
+        isThemeDark={isThemeDark}
+        store={store}
+      >
+        <Grid item sm={firstGridItem ? 10 : 12} xs={12}>
           <div>
-            {isMobile ? null : (
+            {isMobile || store.currentUrl.includes('create-team') ? null : (
               <React.Fragment>
                 <i
                   style={{
@@ -158,9 +260,7 @@ class Layout extends React.Component<Props> {
           </div>
           {children}
         </Grid>
-        <Notifier />
-        <Confirmer />
-      </Grid>
+      </LayoutWrapper>
     );
   }
 }

@@ -38,6 +38,28 @@ export const toggleThemeApiMethod = (data) =>
     body: JSON.stringify(data),
   });
 
+export const getInitialDataApiMethod = (options: any = {}) =>
+  sendRequestAndGetResponse(
+    `${BASE_PATH}/get-initial-data`,
+    Object.assign(
+      {
+        body: JSON.stringify(options.data || {}),
+      },
+      options,
+    ),
+  );
+
+export const getTeamListApiMethod = () =>
+  sendRequestAndGetResponse(`${BASE_PATH}/teams`, {
+    method: 'GET',
+  });
+
+export const getTeamMembersApiMethod = (teamId: string) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/teams/get-members`, {
+    method: 'GET',
+    qs: { teamId },
+  });
+
 /**
  * Notes:
  * - We place the code to a team-member.ts file instead of public.ts, because uploading files is allowed only for logged-in users.
