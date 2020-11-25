@@ -46,7 +46,15 @@ export interface TeamDocument extends mongoose.Document {
 }
 
 interface TeamModel extends mongoose.Model<TeamDocument> {
-  addTeam({ name, userId }: { userId: string; name: string; avatarUrl: string }): Promise<TeamDocument>;
+  addTeam({
+    name,
+    userId,
+  }: {
+    userId: string;
+    name: string;
+    avatarUrl: string;
+  }): Promise<TeamDocument>;
+
   updateTeam({
     userId,
     teamId,
@@ -58,7 +66,9 @@ interface TeamModel extends mongoose.Model<TeamDocument> {
     name: string;
     avatarUrl: string;
   }): Promise<TeamDocument>;
+
   getAllTeamsForUser(userId: string): Promise<TeamDocument[]>;
+
   removeMember({
     teamId,
     teamLeaderId,
@@ -122,22 +132,24 @@ class TeamClass extends mongoose.Model {
   }
 
   public static getAllTeamsForUser(userId: string) {
+    console.log(`userId:${userId}`);
     return this.find({ memberIds: userId }).setOptions({ lean: true });
   }
 
-  // public static async removeMember({ teamId, teamLeaderId, userId }) {
-  //   const team = await this.findById(teamId).select('memberIds teamLeaderId');
+  public static async removeMember({ teamId, teamLeaderId, userId }) {
+    const team = await this.findById(teamId).select('memberIds teamLeaderId');
 
-  //   if (!team) {
-  //     throw new Error('Team does not exist');
-  //   }
+    if (!team) {
+      throw new Error('Team does not exist');
+    }
 
-  //   if (team.teamLeaderId !== teamLeaderId || teamLeaderId === userId) {
-  //     throw new Error('Permission denied');
-  //   }
+    if (team.teamLeaderId !== teamLeaderId || teamLeaderId === userId) {
+      throw new Error('Permission denied');
+    }
 
-  //   await this.findByIdAndUpdate(teamId, { $pull: { memberIds: userId } });
-  // }
+    // @ts-ignore
+    await this.findByIdAndUpdate(teamId, { $pull: { memberIds: userId } });
+  }
 }
 
 mongoSchema.loadClass(TeamClass);

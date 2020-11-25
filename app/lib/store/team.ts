@@ -1,8 +1,12 @@
 import { action, decorate, IObservableArray, observable, runInAction } from 'mobx';
-import { updateTeamApiMethod } from '../api/team-leader';
-
+import {
+  inviteMemberApiMethod,
+  removeMemberApiMethod,
+  updateTeamApiMethod,
+} from '../api/team-leader';
 import { Store } from './index';
 import { User } from './user';
+import { Invitation } from './invitation';
 
 class Team {
   public store: Store;
@@ -14,11 +18,8 @@ class Team {
   public slug: string;
   public avatarUrl: string;
   public memberIds: IObservableArray<string> = observable([]);
-
   public members: Map<string, User> = new Map();
-
-  public isLoadingMembers = false;
-  public isInitialMembersLoaded = false;
+  public invitations: Map<string, Invitation> = new Map();
 
   constructor(params) {
     this._id = params._id;
@@ -29,14 +30,11 @@ class Team {
     this.memberIds.replace(params.memberIds || []);
 
     this.store = params.store;
-
-    if (params.initialMembers) {
-      this.setInitialMembers(params.initialMembers);
-    }
   }
 
-  public setInitialMembers(users) {
+  public setInitialMembersAndInvitations(users, invitations) {
     this.members.clear();
+    this.invitations.clear();
 
     for (const user of users) {
       if (this.store.currentUser && this.store.currentUser._id === user._id) {
@@ -45,6 +43,12 @@ class Team {
         this.members.set(user._id, new User(user));
       }
     }
+
+    for (const invitation of invitations) {
+      this.invitations.set(invitation._id, new Invitation(invitation));
+    }
+
+    console.log(this.members);
   }
 
   public async updateTheme({ name, avatarUrl }: { name: string; avatarUrl: string }) {
@@ -66,9 +70,22 @@ class Team {
     }
   }
 
+  public async inviteMember(email: string) {
+    try {
+      const { newInvitation } = await inviteMemberApiMethod({ teamId: this._id, email });
+
+      runInAction(() => {
+        this.invitations.set(newInvitation._id, new Invitation(newInvitation));
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   public async removeMember(userId: string) {
     try {
-      //   await removeMemberApiMethod({ teamId: this._id, userId });
+      await removeMemberApiMethod({ teamId: this._id, userId });
 
       runInAction(() => {
         this.members.delete(userId);
@@ -87,9 +104,11 @@ decorate(Team, {
   avatarUrl: observable,
   memberIds: observable,
   members: observable,
+  invitations: observable,
 
-  setInitialMembers: action,
+  setInitialMembersAndInvitations: action,
   updateTheme: action,
+  inviteMember: action,
   removeMember: action,
 });
 

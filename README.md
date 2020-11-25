@@ -296,6 +296,12 @@ if (request && request.headers && request.headers.cookie) {
 - An end user loads a page in a new browser tab, the browser sends a request to our API server, mobx creates store on the server, the page uses store to populate data, our API server renders the page with data and sends this rendered page to the browser, and finally mobX deletes store. So, as you can see, there is no reason for mobx to hold a clone of store in the server's memory and wait for any changes in the data inside store. Simply put, there are no user actions to change any data inside store, and store gets created and deleted per request.
 - Note that for a component to re-render automatically and reactively when its corresponding data changes, it has to wrapped by the observer HOC.
 
+
+## Invitations 
+- to send an invitation, a Team Leader has to provide our application with an invited user's email address. Our application will send an invitation email to invited user. This email contains an invitation link. After clicking on this link, an inivted user is redirected to an Invitation page that has a LoginButton component. If the invited user was already logged in to our application, this invited user automatically becomes a Team Member and is shown a informational message. If the invited user was not logged in to our application, then this invited user has to log in. Once logged in, the inivted user becomes a Team Member.
+- However, we haven't created a page on which an invited user lands after clicking the invitation link inside the invitation email. We need this page for invited users who either (1) never signed up in our application or (2) signed up but are currently logged out. If an invited user is logged in, we simply show an informational message using the notify method. But if an invited user is logged out (never signed up or signed up but logged out), then our application will redirect that user to the Invitation page.
+
+
 ## Further reading 
 - principle of least privilege:
 

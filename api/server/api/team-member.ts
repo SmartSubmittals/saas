@@ -4,6 +4,7 @@ import { signRequestForUpload } from '../aws-s3';
 
 import User from '../models/User';
 import Team from '../models/Team';
+import Invitation from '../models/Invitation';
 
 const router = express.Router();
 /**
@@ -106,7 +107,15 @@ async function loadTeamData(team, userId) {
     teamId: team._id,
   });
 
-  const data: any = { initialMembers };
+  let initialInvitations = [];
+  if (userId === team.teamLeaderId) {
+    initialInvitations = await Invitation.getTeamInvitations({
+      userId,
+      teamId: team._id,
+    });
+  }
+
+  const data: any = { initialMembers, initialInvitations };
 
   return data;
 }

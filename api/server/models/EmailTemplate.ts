@@ -55,6 +55,12 @@ export async function insertTemplates() {
             message: `
             <p>Log into your account by clicking on this link: <a href="<%= loginURL %>"><%= loginURL %></a>.</p>`,
         },
+        {
+            name: 'invitation',
+            subject: 'You are invited to join a Team at saas-app.builderbook.org',
+            message: `You've been invited to join <b><%= teamName%></b>.
+              <br/>Click here to accept the invitation: <%= invitationURL%>`,
+        },
     ];
 
   for (const t of templates) {

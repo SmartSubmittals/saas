@@ -15,7 +15,11 @@ class MyApp extends App<{ isMobile: boolean }> {
     let firstGridItem = true;
     let teamRequired = false;
 
-    if (ctx.pathname.includes('/login') || ctx.pathname.includes('/create-team')) {
+    if (
+      ctx.pathname.includes('/login') ||
+      ctx.pathname.includes('/create-team') ||
+      ctx.pathname.includes('/invitation')
+    ) {
       firstGridItem = false;
     }
 
@@ -27,7 +31,7 @@ class MyApp extends App<{ isMobile: boolean }> {
       teamRequired = true;
     }
 
-    const { teamSlug } = ctx.query;
+    const { teamSlug, redirectMessage } = ctx.query;
     console.log(`ctx.query.teamSlug: ${teamSlug}`);
 
     const pageProps = {
@@ -35,6 +39,7 @@ class MyApp extends App<{ isMobile: boolean }> {
       firstGridItem,
       teamSlug,
       teamRequired,
+      redirectMessage,
     };
 
     if (Component.getInitialProps) {

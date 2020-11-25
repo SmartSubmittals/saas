@@ -3,6 +3,8 @@ import * as passwordless from 'passwordless';
 import sendEmail from './aws-ses';
 import getEmailTemplate from './models/EmailTemplate';
 import User from './models/User';
+import Invitation from './models/Invitation';
+
 import PasswordlessMongoStore from './passwordless-token-mongostore';
 
 function setupPasswordless({ server }) {
@@ -47,25 +49,29 @@ function setupPasswordless({ server }) {
 
   server.post(
     '/auth/email-login-link',
-    passwordless.requestToken(
-      async (email, __, callback) => {
-        try {
-          const user = await User.findOne({ email })
-            .select('_id')
-            .setOptions({ lean: true });
+    passwordless.requestToken(async (email, __, callback) => {
+      try {
+        const user = await User.findOne({ email })
+          .select('_id')
+          .setOptions({ lean: true });
 
-          if (user) {
-            callback(null, user._id);
-          } else {
-            const id = await mongoStore.storeOrUpdateByEmail(email);
-            callback(null, id);
-          }
-        } catch (error) {
-          callback(error, null);
+        if (user) {
+          callback(null, user._id);
+        } else {
+          const id = await mongoStore.storeOrUpdateByEmail(email);
+          callback(null, id);
         }
-      },
-    ),
-    (_, res) => {
+      } catch (error) {
+        callback(error, null);
+      }
+    }),
+    (req, res) => {
+      if (req.query && req.query.invitationToken) {
+        req.session.invitationToken = req.query.invitationToken;
+      } else {
+        req.session.invitationToken = null;
+      }
+
       res.json({ done: 1 });
     },
   );
@@ -84,12 +90,23 @@ function setupPasswordless({ server }) {
       }
     },
     (req, res) => {
+      if (req.user && req.session.invitationToken) {
+        Invitation.addUserToTeam({
+          token: req.session.invitationToken,
+          user: req.user,
+        }).catch((err) => console.error(err));
+
+        req.session.invitationToken = null;
+      }
+
       let redirectUrlAfterLogin;
+
       if (req.user && !req.user.defaultTeamSlug) {
         redirectUrlAfterLogin = '/create-team';
       } else {
         redirectUrlAfterLogin = `/your-settings`;
       }
+
       res.redirect(`${process.env.URL_APP}${redirectUrlAfterLogin}`);
     },
   );
