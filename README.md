@@ -11,7 +11,7 @@
 - mobx 
 
 
-last checkpoint: [Application State](https://builderbook.org/books/saas-boilerplate/application-state-app-hoc-store-and-mobx-data-store-for-user-toggle-theme-api-team-invitation)
+last checkpoint: [Discussion API. Post API. Websockets](https://builderbook.org/books/saas-boilerplate/discussion-api-post-api-websockets)
 
 
 ## Deployment 
