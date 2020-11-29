@@ -45,7 +45,7 @@ class Discussion {
       await editDiscussionApiMethod({
         id: this._id,
         ...data,
-        // socketId: (this.store.socket && this.store.socket.id) || null,
+        socketId: (this.store.socket && this.store.socket.id) || null,
       });
 
       runInAction(() => {
@@ -96,7 +96,7 @@ class Discussion {
     const { post } = await addPostApiMethod({
       discussionId: this._id,
       content,
-      //   socketId: (this.store.socket && this.store.socket.id) || null,
+      socketId: (this.store.socket && this.store.socket.id) || null,
     });
 
     return new Promise<Post>((resolve) => {
@@ -119,12 +119,28 @@ class Discussion {
     await deletePostApiMethod({
       id: post._id,
       discussionId: this._id,
-      //   socketId: (this.store.socket && this.store.socket.id) || null,
+      socketId: (this.store.socket && this.store.socket.id) || null,
     });
 
     runInAction(() => {
       this.posts.remove(post);
     });
+  }
+
+  public joinSocketRooms() {
+    if (this.store.socket) {
+      console.log('joining socket discussion room', this.name);
+      this.store.socket.emit('joinTeamRoom', this.team._id);
+      this.store.socket.emit('joinDiscussionRoom', this._id);
+    }
+  }
+
+  public leaveSocketRooms() {
+    if (this.store.socket) {
+      console.log('leaving socket discussion room', this.name);
+      this.store.socket.emit('leaveTeamRoom', this.team._id);
+      this.store.socket.emit('leaveDiscussionRoom', this._id);
+    }
   }
 
   public handleDiscussionRealtimeEvent = (data) => {

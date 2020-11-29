@@ -6,16 +6,14 @@ import * as React from 'react';
 
 import { observer } from 'mobx-react';
 
-// import Loading from '../components/common/Loading';
 import Layout from '../components/layout';
-// import notify from '../lib/notify';
+import PostDetail from '../components/posts/PostDetail';
+import PostForm from '../components/posts/PostForm';
+import notify from '../lib/notify';
 import { Store } from '../lib/store';
 import { Discussion } from '../lib/store/discussion';
 import withAuth from '../lib/withAuth';
-
-import { Post } from '../lib/store/post';
-import PostDetail from '../components/posts/PostDetail';
-import PostForm from '../components/posts/PostForm';
+import { Post } from 'lib/store/post';
 
 type Props = {
   store: Store;
@@ -32,19 +30,21 @@ type State = {
 
 class DiscussionPageComp extends React.Component<Props, State> {
   public state = {
-    disabled: false,
     selectedPost: null,
     showMarkdownClicked: false,
   };
 
   public render() {
-    const { store, discussionSlug, isMobile } = this.props;
+    const { store, isMobile, discussionSlug } = this.props;
     const { currentTeam } = store;
     const { selectedPost } = this.state;
 
     if (!currentTeam || currentTeam.slug !== this.props.teamSlug) {
       return (
         <Layout {...this.props}>
+          <Head>
+            <title>No Team is found.</title>
+          </Head>
           <div style={{ padding: isMobile ? '0px' : '0px 30px' }}>No Team is found.</div>
         </Layout>
       );
@@ -56,17 +56,22 @@ class DiscussionPageComp extends React.Component<Props, State> {
       if (currentTeam.isLoadingDiscussions) {
         return (
           <Layout {...this.props}>
-            <div style={{ padding: isMobile ? '0px' : '0px 30px' }}>Loading discussions...</div>
+            <Head>
+              <title>Loading...</title>
+            </Head>
+            <div style={{ padding: isMobile ? '0px' : '0px 30px' }}>
+              <p>Loading Discussions...</p>
+            </div>
           </Layout>
         );
       } else {
         return (
           <Layout {...this.props}>
             <Head>
-              <title>No discussion is found.</title>
+              <title>No Discussion is found.</title>
             </Head>
             <div style={{ padding: isMobile ? '0px' : '0px 30px' }}>
-              <p>No discussion is found.</p>
+              <p>No Discussion is found.</p>
             </div>
           </Layout>
         );
@@ -157,20 +162,12 @@ class DiscussionPageComp extends React.Component<Props, State> {
       return;
     }
 
-    if (slug && store.currentTeam) {
-      return store.currentTeam.getDiscussionBySlug(slug);
+    if (slug && currentTeam) {
+      return currentTeam.getDiscussionBySlug(slug);
     }
 
     return null;
   }
-
-  public onEditClickCallback = (post) => {
-    this.setState({ selectedPost: post, showMarkdownClicked: false });
-  };
-
-  public onSnowMarkdownClickCallback = (post) => {
-    this.setState({ selectedPost: post, showMarkdownClicked: true });
-  };
 
   public renderPosts() {
     const { isServer, store, isMobile } = this.props;
@@ -219,10 +216,103 @@ class DiscussionPageComp extends React.Component<Props, State> {
             )
           : null}
 
-        {discussion && discussion.isLoadingPosts && !isServer ? <p>${loading}</p> : null}
+        {discussion && discussion.isLoadingPosts && !isServer ? <p>{loading}</p> : null}
       </React.Fragment>
     );
   }
+
+  public onEditClickCallback = (post) => {
+    this.setState({ selectedPost: post, showMarkdownClicked: false });
+  };
+
+  public onSnowMarkdownClickCallback = (post) => {
+    this.setState({ selectedPost: post, showMarkdownClicked: true });
+  };
+
+  public componentDidMount() {
+    const { discussionSlug, store, isServer } = this.props;
+
+    if (store.currentTeam && (!isServer || !discussionSlug)) {
+      store.currentTeam.loadDiscussions().catch((err) => notify(err));
+    }
+
+    const discussion = this.getDiscussion(discussionSlug);
+
+    if (discussion) {
+      discussion.joinSocketRooms();
+    }
+
+    console.log(store.socket);
+
+    store.socket.on('discussionEvent', this.handleDiscussionEvent);
+    store.socket.on('postEvent', this.handlePostEvent);
+    store.socket.on('reconnect', this.handleSocketReconnect);
+  }
+
+  public componentWillUnmount() {
+    const { discussionSlug, store } = this.props;
+
+    const discussion = this.getDiscussion(discussionSlug);
+
+    if (discussion) {
+      discussion.leaveSocketRooms();
+    }
+
+    store.socket.off('discussionEvent', this.handleDiscussionEvent);
+    store.socket.off('postEvent', this.handlePostEvent);
+    store.socket.off('reconnect', this.handleSocketReconnect);
+  }
+
+  public componentDidUpdate(prevProps: Props) {
+    const { discussionSlug, isServer } = this.props;
+
+    if (prevProps.discussionSlug !== discussionSlug) {
+      if (prevProps.discussionSlug) {
+        const prevDiscussion = this.getDiscussion(prevProps.discussionSlug);
+        if (prevDiscussion) {
+          prevDiscussion.leaveSocketRooms();
+        }
+      }
+
+      const discussion = this.getDiscussion(discussionSlug);
+
+      if (!isServer && discussion) {
+        discussion.loadPosts().catch((err) => notify(err));
+      }
+
+      if (discussion) {
+        discussion.joinSocketRooms();
+      }
+    }
+  }
+
+  private handleDiscussionEvent = (data) => {
+    console.log('discussion realtime event', data);
+
+    const discussion = this.getDiscussion(this.props.discussionSlug);
+    if (discussion) {
+      discussion.handleDiscussionRealtimeEvent(data);
+    }
+  };
+
+  private handlePostEvent = (data) => {
+    console.log('post realtime event', data);
+
+    const discussion = this.getDiscussion(this.props.discussionSlug);
+    if (discussion) {
+      discussion.handlePostRealtimeEvent(data);
+    }
+  };
+
+  private handleSocketReconnect = () => {
+    console.log('pages/discussion.tsx: socket re-connected');
+
+    const discussion = this.getDiscussion(this.props.discussionSlug);
+    if (discussion) {
+      discussion.loadPosts().catch((err) => notify(err));
+      discussion.joinSocketRooms();
+    }
+  };
 }
 
 export default withAuth(observer(DiscussionPageComp));

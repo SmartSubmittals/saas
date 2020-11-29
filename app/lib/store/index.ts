@@ -1,8 +1,11 @@
 import * as mobx from 'mobx';
-import { action, decorate, observable } from 'mobx';
+import { action, decorate, IObservableArray, observable } from 'mobx';
 import { useStaticRendering } from 'mobx-react';
-import { getTeamListApiMethod, getTeamMembersApiMethod } from '../api/team-member';
+import io from 'socket.io-client';
+
 import { addTeamApiMethod, getTeamInvitationsApiMethod } from '../api/team-leader';
+import { getTeamListApiMethod, getTeamMembersApiMethod } from '../api/team-member';
+
 import { User } from './user';
 import { Team } from './team';
 
@@ -18,21 +21,44 @@ class Store {
 
   public currentTeam?: Team;
 
-  constructor({ initialState = {}, isServer }: { initialState?: any; isServer: boolean }) {
+  public teams: IObservableArray<Team> = observable([]);
+
+  public socket: SocketIOClient.Socket;
+
+  constructor({
+    initialState = {},
+    isServer,
+    socket = null,
+  }: {
+    initialState?: any;
+    isServer: boolean;
+    socket?: SocketIOClient.Socket;
+  }) {
     this.isServer = !!isServer;
 
-    /**
-     * initialState.user gets populated by the App.getInitialProps method in /app/pages/_app.tsx.
-     */
     this.setCurrentUser(initialState.user);
 
     this.currentUrl = initialState.currentUrl || '';
+
+    // console.log(initialState.user);
 
     if (initialState.teamSlug || (initialState.user && initialState.user.defaultTeamSlug)) {
       this.setCurrentTeam(
         initialState.teamSlug || initialState.user.defaultTeamSlug,
         initialState.teams,
       );
+    }
+
+    this.socket = socket;
+
+    if (socket) {
+      socket.on('disconnect', () => {
+        console.log('socket: ## disconnected');
+      });
+
+      socket.on('reconnect', (attemptNumber) => {
+        console.log('socket: $$ reconnected', attemptNumber);
+      });
     }
   }
 
@@ -88,6 +114,33 @@ class Store {
       this.currentTeam = null;
     }
   }
+
+  public addTeamToLocalCache(data): Team {
+    const teamObj = new Team({ user: this.currentUser, store: this, ...data });
+    this.teams.unshift(teamObj);
+
+    return teamObj;
+  }
+
+  public editTeamFromLocalCache(data) {
+    const team = this.teams.find((item) => item._id === data._id);
+
+    if (team) {
+      if (data.memberIds && data.memberIds.includes(this.currentUser._id)) {
+        team.changeLocalCache(data);
+      } else {
+        this.removeTeamFromLocalCache(data._id);
+      }
+    } else if (data.memberIds && data.memberIds.includes(this.currentUser._id)) {
+      this.addTeamToLocalCache(data);
+    }
+  }
+
+  public removeTeamFromLocalCache(teamId: string) {
+    const team = this.teams.find((t) => t._id === teamId);
+
+    this.teams.remove(team);
+  }
 }
 
 decorate(Store, {
@@ -105,8 +158,10 @@ let store: Store = null;
 function initializeStore(initialState = {}) {
   const isServer = typeof window === 'undefined';
 
+  const socket = isServer ? null : io(process.env.URL_API);
+
   const _store =
-    store !== null && store !== undefined ? store : new Store({ initialState, isServer });
+    store !== null && store !== undefined ? store : new Store({ initialState, isServer, socket });
 
   // For SSG and SSR always create a new store
   if (typeof window === 'undefined') {
@@ -117,7 +172,7 @@ function initializeStore(initialState = {}) {
     store = _store;
   }
 
-  console.log(_store);
+  // console.log(_store);
 
   return _store;
 }

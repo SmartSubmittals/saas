@@ -132,7 +132,7 @@ class Team {
   public async addDiscussion(data): Promise<Discussion> {
     const { discussion } = await addDiscussionApiMethod({
       teamId: this._id,
-      // socketId: (this.store.socket && this.store.socket.id) || null,
+      socketId: (this.store.socket && this.store.socket.id) || null,
       ...data,
     });
 
@@ -157,6 +157,7 @@ class Team {
   public async deleteDiscussion(id: string) {
     await deleteDiscussionApiMethod({
       id,
+      socketId: (this.store.socket && this.store.socket.id) || null,
     });
 
     runInAction(() => {

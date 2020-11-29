@@ -8,6 +8,15 @@ import Invitation from '../models/Invitation';
 import Discussion from '../models/Discussion';
 import Post from '../models/Post';
 
+import {
+  discussionAdded,
+  discussionDeleted,
+  discussionEdited,
+  postAdded,
+  postDeleted,
+  postEdited,
+} from '../sockets';
+
 const router = express.Router();
 
 router.use((req, res, next) => {
@@ -176,6 +185,8 @@ router.post('/discussions/add', async (req, res, next) => {
       memberIds,
     });
 
+    discussionAdded({ socketId, discussion });
+
     res.json({ discussion });
   } catch (err) {
     next(err);
@@ -193,6 +204,8 @@ router.post('/discussions/edit', async (req, res, next) => {
       memberIds,
     });
 
+    discussionEdited({ socketId, discussion: updatedDiscussion });
+
     res.json({ done: 1 });
   } catch (err) {
     next(err);
@@ -205,6 +218,8 @@ router.post('/discussions/delete', async (req, res, next) => {
 
     const { teamId } = await Discussion.delete({ userId: req.user.id, id });
 
+    discussionDeleted({ socketId, teamId, id });
+
     res.json({ done: 1 });
   } catch (err) {
     next(err);
@@ -213,11 +228,11 @@ router.post('/discussions/delete', async (req, res, next) => {
 
 router.get('/discussions/list', async (req, res, next) => {
   try {
-    const { teamId } = req.query;
+    let { teamId } = req.query;
+    teamId = teamId.toString();
 
     const { discussions } = await Discussion.getList({
       userId: req.user.id,
-      // @ts-ignore
       teamId,
     });
 
@@ -242,9 +257,11 @@ router.get('/posts/list', async (req, res, next) => {
 
 router.post('/posts/add', async (req, res, next) => {
   try {
-    const { content, discussionId } = req.body;
+    const { content, discussionId, socketId } = req.body;
 
     const post = await Post.add({ userId: req.user.id, content, discussionId });
+
+    postAdded({ socketId, post });
 
     res.json({ post });
   } catch (err) {
@@ -254,9 +271,11 @@ router.post('/posts/add', async (req, res, next) => {
 
 router.post('/posts/edit', async (req, res, next) => {
   try {
-    const { content, id } = req.body;
+    const { content, id, socketId } = req.body;
 
-    await Post.edit({ userId: req.user.id, content, id });
+    const updatedPost = await Post.edit({ userId: req.user.id, content, id });
+
+    postEdited({ socketId, post: updatedPost });
 
     res.json({ done: 1 });
   } catch (err) {
@@ -266,9 +285,11 @@ router.post('/posts/edit', async (req, res, next) => {
 
 router.post('/posts/delete', async (req, res, next) => {
   try {
-    const { id, discussionId } = req.body;
+    const { id, discussionId, socketId } = req.body;
 
     await Post.delete({ userId: req.user.id, id });
+
+    postDeleted({ socketId, id, discussionId });
 
     res.json({ done: 1 });
   } catch (err) {

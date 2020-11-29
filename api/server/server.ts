@@ -1,15 +1,15 @@
 import './env';
+import * as mongoSessionStore from 'connect-mongo';
 import * as cors from 'cors';
 import * as express from 'express';
-import * as mongoose from 'mongoose';
 import * as session from 'express-session';
-import * as mongoSessionStore from 'connect-mongo';
+import * as httpModule from 'http';
+import * as mongoose from 'mongoose';
+
 import api from './api';
 import { setupGoogle } from './google-auth';
-import { insertTemplates } from './models/EmailTemplate';
 import { setupPasswordless } from './passwordless-auth';
-// import logger from './logs';
-
+import { setup as setupSockets } from './sockets';
 
 const options = {
   useNewUrlParser: true,
@@ -18,22 +18,13 @@ const options = {
   useUnifiedTopology: true,
 };
 
-// initialization
-
 mongoose.connect(process.env.MONGO_URL, options);
-
-// insert email templates to mongodb
-insertTemplates();
 
 const server = express();
 
-// Ensure all api-related responses have header
-// Access-Control-Allow-Origin: http://localhost:3000
 server.use(cors({ origin: process.env.URL_APP, credentials: true }));
 
 server.use(express.json());
-// session handling
-// session handling
 
 const MongoStore = mongoSessionStore(session);
 
@@ -52,31 +43,24 @@ const sessionOptions = {
     httpOnly: true,
     maxAge: 14 * 24 * 60 * 60 * 1000, // expires in 14 days
     secure: false,
-  }
+  },
 };
 
 const sessionMiddleware = session(sessionOptions);
 server.use(sessionMiddleware);
 
-
-// set up google & passwordless
-
 setupGoogle({ server });
 setupPasswordless({ server });
 
-// api server
-
 api(server);
 
-// The * wildcard path/route is sending a response with 403 status on all possible routes.
+const http = new httpModule.Server(server);
+setupSockets({ http, origin: process.env.URL_APP, sessionMiddleware });
+
 server.get('*', (_, res) => {
   res.sendStatus(403);
 });
 
-server.on('error', (error) => {
-  throw error
-})
-
-server.listen(process.env.PORT_API, () => {
+http.listen(process.env.PORT_API, () => {
   console.log(`> Ready on ${process.env.URL_API}`);
 });

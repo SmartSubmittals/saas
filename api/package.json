@@ -19,6 +19,7 @@
         "@types/express-session": "^1.17.2",
         "@types/jest": "^26.0.15",
         "@types/mongoose": "^5.10.1",
+        "@types/socket.io": "^2.1.11",
         "aws-sdk": "^2.793.0",
         "bcrypt": "^5.0.0",
         "connect-mongo": "^3.2.0",

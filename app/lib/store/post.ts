@@ -42,6 +42,7 @@ export class Post {
       await editPostApiMethod({
         id: this._id,
         content: data.content,
+        socketId: (this.store.socket && this.store.socket.id) || null,
       });
 
       runInAction(() => {

@@ -307,6 +307,9 @@ if (request && request.headers && request.headers.cookie) {
 - to send an invitation, a Team Leader has to provide our application with an invited user's email address. Our application will send an invitation email to invited user. This email contains an invitation link. After clicking on this link, an inivted user is redirected to an Invitation page that has a LoginButton component. If the invited user was already logged in to our application, this invited user automatically becomes a Team Member and is shown a informational message. If the invited user was not logged in to our application, then this invited user has to log in. Once logged in, the inivted user becomes a Team Member.
 - However, we haven't created a page on which an invited user lands after clicking the invitation link inside the invitation email. We need this page for invited users who either (1) never signed up in our application or (2) signed up but are currently logged out. If an invited user is logged in, we simply show an informational message using the notify method. But if an invited user is logged out (never signed up or signed up but logged out), then our application will redirect that user to the Invitation page.
 
+## Websockets 
+- websocket methods will be called by corresponding Express routes (add/edit/delete discussion or post). Once called, these methods emit messages (packets) from API to APP on the browser and trigger corresponding store methods to re-render UI for all team members (add/edit/delete discussion) or all discussion participants (add/edit/delete post)
+- for every browser that loads the DiscussionPageComp page, the browser emits an event that gets registered by the API server. The API server adds sockets one by one to two rooms, one with the name teamRoom-${teamId}and another with the name discussionRoom-${discussionId}. The API server registers events and adds sockets to rooms
 
 ## Further reading 
 - principle of least privilege:
