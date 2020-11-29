@@ -15,7 +15,7 @@ You, as a software developer and business owner, should answer this question ear
 - mobx 
 
 
-last checkpoint: [Discussion API. Post API. Websockets](https://builderbook.org/books/saas-boilerplate/discussion-api-post-api-websockets)
+last checkpoint: [Websockets](https://builderbook.org/books/saas-boilerplate/discussion-api-post-api-websockets#testing-post-api)
 
 
 ## Deployment 
