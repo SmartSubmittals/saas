@@ -157,7 +157,7 @@ router.get('/teams', async (req, res, next) => {
 
 router.get('/teams/get-members', async (req, res, next) => {
   try {
-    const users = await User.getMembersForTeam({ userId: req.user.id, teamId: req.query.teamId });
+    const users = await User.getMembersForTeam({ userId: req.user.id, teamId: req.query.teamId as string });
 
     res.json({ users });
   } catch (err) {
@@ -217,6 +217,7 @@ router.get('/discussions/list', async (req, res, next) => {
 
     const { discussions } = await Discussion.getList({
       userId: req.user.id,
+      // @ts-ignore
       teamId,
     });
 
@@ -230,7 +231,7 @@ router.get('/posts/list', async (req, res, next) => {
   try {
     const posts = await Post.getList({
       userId: req.user.id,
-      discussionId: req.query.discussionId,
+      discussionId: req.query.discussionId as string,
     });
 
     res.json({ posts });
@@ -245,7 +246,7 @@ router.post('/posts/add', async (req, res, next) => {
 
     const post = await Post.add({ userId: req.user.id, content, discussionId });
 
-    postAdded({ socketId, post });
+    // postAdded({ socketId, post });
 
     res.json({ post });
   } catch (err) {
@@ -259,7 +260,7 @@ router.post('/posts/edit', async (req, res, next) => {
 
     const updatedPost = await Post.edit({ userId: req.user.id, content, id });
 
-    postEdited({ socketId, post: updatedPost });
+    // postEdited({ socketId, post: updatedPost });
 
     res.json({ done: 1 });
   } catch (err) {
