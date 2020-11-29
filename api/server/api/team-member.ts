@@ -242,11 +242,9 @@ router.get('/posts/list', async (req, res, next) => {
 
 router.post('/posts/add', async (req, res, next) => {
   try {
-    const { content, discussionId, socketId } = req.body;
+    const { content, discussionId } = req.body;
 
     const post = await Post.add({ userId: req.user.id, content, discussionId });
-
-    // postAdded({ socketId, post });
 
     res.json({ post });
   } catch (err) {
@@ -256,11 +254,9 @@ router.post('/posts/add', async (req, res, next) => {
 
 router.post('/posts/edit', async (req, res, next) => {
   try {
-    const { content, id, socketId } = req.body;
+    const { content, id } = req.body;
 
-    const updatedPost = await Post.edit({ userId: req.user.id, content, id });
-
-    // postEdited({ socketId, post: updatedPost });
+    await Post.edit({ userId: req.user.id, content, id });
 
     res.json({ done: 1 });
   } catch (err) {
@@ -270,7 +266,7 @@ router.post('/posts/edit', async (req, res, next) => {
 
 router.post('/posts/delete', async (req, res, next) => {
   try {
-    const { id, discussionId, socketId } = req.body;
+    const { id, discussionId } = req.body;
 
     await Post.delete({ userId: req.user.id, id });
 

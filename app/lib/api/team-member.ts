@@ -81,6 +81,27 @@ export const deleteDiscussionApiMethod = (data) =>
     body: JSON.stringify(data),
   });
 
+export const getPostListApiMethod = (discussionId: string) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/posts/list`, {
+    method: 'GET',
+    qs: { discussionId },
+  });
+
+export const addPostApiMethod = (data) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/posts/add`, {
+    body: JSON.stringify(data),
+  });
+
+export const editPostApiMethod = (data) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/posts/edit`, {
+    body: JSON.stringify(data),
+  });
+
+export const deletePostApiMethod = (data) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/posts/delete`, {
+    body: JSON.stringify(data),
+  });
+
 /**
  * Notes:
  * - We place the code to a team-member.ts file instead of public.ts, because uploading files is allowed only for logged-in users.
