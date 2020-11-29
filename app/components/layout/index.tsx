@@ -10,6 +10,7 @@ import Confirmer from '../common/Confirmer';
 import Notifier from '../common/Notifier';
 
 import { Store } from '../../lib/store';
+import DiscussionList from '../discussions/DiscussionList';
 
 const dev = process.env.NODE_ENV !== 'production';
 
@@ -91,15 +92,15 @@ function LayoutWrapper({
               <MenuWithLinks
                 options={[
                   {
-                    text: 'Billing',
-                    href: `/billing?teamSlug=${store.currentTeam.slug}`,
-                    as: `/team/${store.currentTeam.slug}/billing`,
-                    simple: true,
-                  },
-                  {
                     text: 'Team Settings',
                     href: `/team-settings?teamSlug=${store.currentTeam.slug}`,
                     as: `/team/${store.currentTeam.slug}/team-settings`,
+                    simple: true,
+                  },
+                  {
+                    text: 'Billing',
+                    href: `/billing?teamSlug=${store.currentTeam.slug}`,
+                    as: `/team/${store.currentTeam.slug}/billing`,
                     simple: true,
                   },
                   {
@@ -137,7 +138,8 @@ function LayoutWrapper({
             </div>
             <hr />
             <p />
-            <p />{' '}
+            <p />
+            <DiscussionList store={store} team={store.currentTeam} isMobile={isMobile} />
           </Grid>
         ) : null}
 

@@ -1,3 +1,7 @@
+You, as a software developer and business owner, should answer this question early. What problem does your SaaS product solve? Who will pay for your product to solve this problem?
+
+***
+
 - git 
 - node 
 - yarn
@@ -98,6 +102,8 @@ The solution is to decouple tasks. We can make one server responsible for reques
 - Order matters for an Express.js server. Not only does the order of Express routes matter, but also the order of Express middleware matters. If you move server.use(express.json()); middleware under all Express routes, then you will get an Invalid JSON error.
 
 - To make BUCKET_FOR_AVATARS available on the browser, you have to update the /app/next.config.js file:
+
+- For every Express route that accepts a request, we have to define an API method that sends the request. Exceptions to this rule include the first API endpoint of our Google OAuth API, where the API endpoint is the button's URL, and some external (third-party) API infrastructures, where we sometimes have to send a request or receive a response from an external server.
 
 ## Javascript Promises
 - In JavaScript, a Promise object is a special object that has state and result properties, as well as methods (e.g. resolve and reject methods). Here's some good documentation for Promise object and its properties:

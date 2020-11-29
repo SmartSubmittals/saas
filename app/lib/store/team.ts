@@ -1,12 +1,19 @@
-import { action, decorate, IObservableArray, observable, runInAction } from 'mobx';
+import { action, decorate, computed, IObservableArray, observable, runInAction } from 'mobx';
 import {
   inviteMemberApiMethod,
   removeMemberApiMethod,
   updateTeamApiMethod,
 } from '../api/team-leader';
+import Router from 'next/router';
+import {
+  addDiscussionApiMethod,
+  deleteDiscussionApiMethod,
+  getDiscussionListApiMethod,
+} from '../api/team-member';
 import { Store } from './index';
 import { User } from './user';
 import { Invitation } from './invitation';
+import { Discussion } from './discussion';
 
 class Team {
   public store: Store;
@@ -21,6 +28,11 @@ class Team {
   public members: Map<string, User> = new Map();
   public invitations: Map<string, Invitation> = new Map();
 
+  public discussions: IObservableArray<Discussion> = observable([]);
+  public currentDiscussion?: Discussion;
+  public currentDiscussionSlug?: string;
+  public isLoadingDiscussions = false;
+
   constructor(params) {
     this._id = params._id;
     this.teamLeaderId = params.teamLeaderId;
@@ -30,6 +42,14 @@ class Team {
     this.memberIds.replace(params.memberIds || []);
 
     this.store = params.store;
+
+    if (params.initialDiscussions) {
+      this.setInitialDiscussions(params.initialDiscussions);
+    } else {
+      this.loadDiscussions();
+    }
+
+    this.currentDiscussionSlug = params.currentDiscussionSlug || null;
   }
 
   public setInitialMembersAndInvitations(users, invitations) {
@@ -49,6 +69,18 @@ class Team {
     }
 
     console.log(this.members);
+  }
+
+  public setInitialDiscussions(discussions) {
+    const discussionObjs = discussions.map(
+      (d) => new Discussion({ team: this, store: this.store, ...d }),
+    );
+
+    this.discussions.replace(discussionObjs);
+
+    if (!this.currentDiscussionSlug && this.discussions.length > 0) {
+      this.currentDiscussionSlug = this.orderedDiscussions[0].slug;
+    }
   }
 
   public async updateTheme({ name, avatarUrl }: { name: string; avatarUrl: string }) {
@@ -96,6 +128,110 @@ class Team {
       throw error;
     }
   }
+
+  public async addDiscussion(data): Promise<Discussion> {
+    const { discussion } = await addDiscussionApiMethod({
+      teamId: this._id,
+      // socketId: (this.store.socket && this.store.socket.id) || null,
+      ...data,
+    });
+
+    return new Promise<Discussion>((resolve) => {
+      runInAction(() => {
+        const obj = this.addDiscussionToLocalCache(discussion);
+        resolve(obj);
+      });
+    });
+  }
+
+  public addDiscussionToLocalCache(data): Discussion {
+    const obj = new Discussion({ team: this, store: this.store, ...data });
+
+    if (obj.memberIds.includes(this.store.currentUser._id)) {
+      this.discussions.push(obj);
+    }
+
+    return obj;
+  }
+
+  public async deleteDiscussion(id: string) {
+    await deleteDiscussionApiMethod({
+      id,
+    });
+
+    runInAction(() => {
+      this.deleteDiscussionFromLocalCache(id);
+
+      const discussion = this.discussions.find((d) => d._id === id);
+
+      if (this.currentDiscussion === discussion) {
+        this.currentDiscussion = null;
+        this.currentDiscussionSlug = null;
+
+        if (this.discussions.length > 0) {
+          const d = this.discussions[0];
+
+          Router.push(
+            `/discussion?teamSlug=${this.slug}&discussionSlug=${d.slug}`,
+            `/team/${this.slug}/discussions/${d.slug}`,
+          );
+        } else {
+          Router.push(`/discussion?teamSlug=${this.slug}`, `/team/${this.slug}/discussions`);
+        }
+      }
+    });
+  }
+
+  public deleteDiscussionFromLocalCache(discussionId: string) {
+    const discussion = this.discussions.find((item) => item._id === discussionId);
+    this.discussions.remove(discussion);
+  }
+
+  public async loadDiscussions() {
+    if (this.store.isServer || this.isLoadingDiscussions) {
+      return;
+    }
+
+    this.isLoadingDiscussions = true;
+
+    try {
+      const { discussions = [] } = await getDiscussionListApiMethod({
+        teamId: this._id,
+      });
+      const newList: Discussion[] = [];
+
+      runInAction(() => {
+        discussions.forEach((d) => {
+          const disObj = this.discussions.find((obj) => obj._id === d._id);
+          if (disObj) {
+            disObj.changeLocalCache(d);
+            newList.push(disObj);
+          } else {
+            newList.push(new Discussion({ team: this, store: this.store, ...d }));
+          }
+        });
+
+        this.discussions.replace(newList);
+      });
+    } finally {
+      runInAction(() => {
+        this.isLoadingDiscussions = false;
+      });
+    }
+  }
+
+  public changeLocalCache(data) {
+    this.name = data.name;
+    this.memberIds.replace(data.memberIds || []);
+  }
+
+  public getDiscussionBySlug(slug): Discussion {
+    return this.discussions.find((d) => d.slug === slug);
+  }
+
+  get orderedDiscussions() {
+    return this.discussions.slice().sort();
+  }
 }
 
 decorate(Team, {
@@ -105,11 +241,24 @@ decorate(Team, {
   memberIds: observable,
   members: observable,
   invitations: observable,
+  currentDiscussion: observable,
+  currentDiscussionSlug: observable,
+  isLoadingDiscussions: observable,
+  discussions: observable,
 
   setInitialMembersAndInvitations: action,
   updateTheme: action,
   inviteMember: action,
   removeMember: action,
+  setInitialDiscussions: action,
+  loadDiscussions: action,
+  addDiscussion: action,
+  addDiscussionToLocalCache: action,
+  deleteDiscussion: action,
+  deleteDiscussionFromLocalCache: action,
+  getDiscussionBySlug: action,
+
+  orderedDiscussions: computed,
 });
 
 export { Team };

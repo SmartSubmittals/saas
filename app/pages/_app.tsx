@@ -31,15 +31,16 @@ class MyApp extends App<{ isMobile: boolean }> {
       teamRequired = true;
     }
 
-    const { teamSlug, redirectMessage } = ctx.query;
+    const { teamSlug, redirectMessage, discussionSlug } = ctx.query;
     console.log(`ctx.query.teamSlug: ${teamSlug}`);
 
     const pageProps = {
       isMobile: isMobile({ req: ctx.req }),
       firstGridItem,
-      teamSlug,
       teamRequired,
+      teamSlug,
       redirectMessage,
+      discussionSlug,
     };
 
     if (Component.getInitialProps) {
@@ -73,7 +74,7 @@ class MyApp extends App<{ isMobile: boolean }> {
       try {
         initialData = await getInitialDataApiMethod({
           request: ctx.req,
-          data: { teamSlug },
+          data: { teamSlug, discussionSlug },
         });
       } catch (error) {
         console.error(error);
