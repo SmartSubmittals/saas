@@ -5,6 +5,7 @@ import React from 'react';
 import * as NProgress from 'nprogress';
 
 import { Store, getStore } from './store';
+
 Router.events.on('routeChangeStart', () => {
   NProgress.start();
 });

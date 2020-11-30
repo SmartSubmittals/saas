@@ -10,11 +10,10 @@ let io: socketio.Server = null;
 
 function setup({ http, origin, sessionMiddleware }) {
   if (io === null) {
-    io = socketio(http, { 
-      origins: origin, 
-      serveClient: false, 
+    io = new socketio.Server(http, { 
+      serveClient: true, 
       cors: {
-          origin: '*',
+          origin: origin,
         } 
     });
 
