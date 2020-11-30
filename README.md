@@ -13,6 +13,8 @@ You, as a software developer and business owner, should answer this question ear
 - mongoose
 - jest.js
 - mobx 
+- websockets (socket.io)
+
 
 
 last checkpoint: [Websockets](https://builderbook.org/books/saas-boilerplate/discussion-api-post-api-websockets#testing-post-api)

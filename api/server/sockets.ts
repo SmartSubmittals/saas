@@ -10,11 +10,9 @@ let io: socketio.Server = null;
 
 function setup({ http, origin, sessionMiddleware }) {
   if (io === null) {
-    io = new socketio.Server(http, { 
-      serveClient: true, 
-      cors: {
-          origin: origin,
-        } 
+    io = socketio(http, {
+      origins: `${origin}:443`,
+      serveClient: false,
     });
 
     // if (dev) {
@@ -67,8 +65,8 @@ function getSocket(socketId?: string) {
     return null;
   }
 
-  if (socketId && io.sockets.sockets[socketId]) {
-    return io.sockets.sockets[socketId].broadcast;
+  if (socketId && io.sockets.connected[socketId]) {
+    return io.sockets.connected[socketId].broadcast;
   } else {
     return io;
   }
