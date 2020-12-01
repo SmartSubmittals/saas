@@ -17,7 +17,7 @@ You, as a software developer and business owner, should answer this question ear
 
 
 
-last checkpoint: [Websockets](https://builderbook.org/books/saas-boilerplate/discussion-api-post-api-websockets#testing-post-api)
+last checkpoint: [Email Notification](https://builderbook.org/books/saas-boilerplate/stripe-api-api-project-stripe-api-app-project-setup-at-stripe-dashboard-and-environmental-variables-email-notification-for-new-post-api-api-project-amazon-api-gateway-and-aws-lambda#email-notification-for-new-post-api-api-project)
 
 
 ## Deployment 
