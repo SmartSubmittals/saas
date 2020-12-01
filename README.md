@@ -313,6 +313,15 @@ if (request && request.headers && request.headers.cookie) {
 - websocket methods will be called by corresponding Express routes (add/edit/delete discussion or post). Once called, these methods emit messages (packets) from API to APP on the browser and trigger corresponding store methods to re-render UI for all team members (add/edit/delete discussion) or all discussion participants (add/edit/delete post)
 - for every browser that loads the DiscussionPageComp page, the browser emits an event that gets registered by the API server. The API server adds sockets one by one to two rooms, one with the name teamRoom-${teamId}and another with the name discussionRoom-${discussionId}. The API server registers events and adds sockets to rooms
 
+
+
+### Subscriptions
+- we let any end user use our boilerplate, but we set a limit to the number of team members that a Team Leader can invite to their team
+- team leader has to go to the Billing page and buy a subscription in order to add a third member to the team
+- When Team Leader clicks on Buy Subscription button, in accordance with Stripe API docs, our server has to create Session object and our code on browser has to receive sessionId with value session.id in order to call redirectToCheckout({ sessionId }) method to redirect Team Leader to Checkout page hosted by Stripe. To create Session object, our application calls API method fetchCheckoutSessionApiMethod after detecting click on Buy Subscription button. fetchCheckoutSessionApiMethod, in turn, sends request to Express route /stripe/fetch-checkout-session. Express route /stripe/fetch-checkout-session finds User and Team documents, checks if they are truthy, checks if end user is indeed proper Team Leader, creates Session object using createSession Stripe method from book/9-begin/api/server/stripe.ts and returns sessionId back to fetchCheckoutSessionApiMethod located at browser
+- When Team Leader decided to cancel subscription, Team Leader clicks on Unsubscribe Team button at Billing page. After click, our application will call cancelSubscriptionApiMethod API method and cancelSubscriptionApiMethod will send request to Express route /cancel-subscription. Express route /cancel-subscription calls Team.cancelSubscription that we deifned in the Team Model - API subsection and return isSubscriptionActive to cancelSubscriptionApiMethod API method at browser
+- When Team Leader decided to see list of recurring payments made to date, Team Leader clicks on Show payment history button at Billing page. Our application triggers getListOfInvoicesApiMethod API method that sends request to Express route get-list-of-invoices-for-customer. Inside this Express route, we call User.getListOfInvoicesForCustomer that we defined in User Model - API subsection. Handler function of Express route receives array of invoices and sends it back to browser, to getListOfInvoicesApiMethod API method
+
 ## Further reading 
 - principle of least privilege:
 

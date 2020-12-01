@@ -10,6 +10,7 @@ import api from './api';
 import { setupGoogle } from './google-auth';
 import { setupPasswordless } from './passwordless-auth';
 import { setup as setupSockets } from './sockets';
+import { stripeWebhookAndCheckoutCallback } from './stripe';
 
 const options = {
   useNewUrlParser: true,
@@ -23,6 +24,8 @@ mongoose.connect(process.env.MONGO_URL, options);
 const server = express();
 
 server.use(cors({ origin: process.env.URL_APP, credentials: true }));
+
+stripeWebhookAndCheckoutCallback({ server });
 
 server.use(express.json());
 
