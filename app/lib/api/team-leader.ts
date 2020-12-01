@@ -32,3 +32,18 @@ export const getTeamInvitationsApiMethod = (teamId: string) =>
     method: 'GET',
     qs: { teamId },
   });
+
+export const fetchCheckoutSessionApiMethod = ({ mode, teamId }: { mode: string; teamId: string }) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/stripe/fetch-checkout-session`, {
+    body: JSON.stringify({ mode, teamId }),
+  });
+
+export const cancelSubscriptionApiMethod = ({ teamId }: { teamId: string }) =>
+  sendRequestAndGetResponse(`${BASE_PATH}/cancel-subscription`, {
+    body: JSON.stringify({ teamId }),
+  });
+
+export const getListOfInvoicesApiMethod = () =>
+  sendRequestAndGetResponse(`${BASE_PATH}/get-list-of-invoices-for-customer`, {
+    method: 'GET',
+  });

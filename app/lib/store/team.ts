@@ -3,6 +3,7 @@ import {
   inviteMemberApiMethod,
   removeMemberApiMethod,
   updateTeamApiMethod,
+  cancelSubscriptionApiMethod,
 } from '../api/team-leader';
 import Router from 'next/router';
 import {
@@ -33,6 +34,19 @@ class Team {
   public currentDiscussionSlug?: string;
   public isLoadingDiscussions = false;
 
+  public stripeSubscription: {
+    id: string;
+    object: string;
+    application_fee_percent: number;
+    billing: string;
+    cancel_at_period_end: boolean;
+    billing_cycle_anchor: number;
+    canceled_at: number;
+    created: number;
+  };
+  public isSubscriptionActive: boolean;
+  public isPaymentFailed: boolean;
+
   constructor(params) {
     this._id = params._id;
     this.teamLeaderId = params.teamLeaderId;
@@ -40,6 +54,12 @@ class Team {
     this.name = params.name;
     this.avatarUrl = params.avatarUrl;
     this.memberIds.replace(params.memberIds || []);
+
+    this.currentDiscussionSlug = params.currentDiscussionSlug || null;
+
+    this.stripeSubscription = params.stripeSubscription;
+    this.isSubscriptionActive = params.isSubscriptionActive;
+    this.isPaymentFailed = params.isPaymentFailed;
 
     this.store = params.store;
 
@@ -228,6 +248,32 @@ class Team {
 
   public getDiscussionBySlug(slug): Discussion {
     return this.discussions.find((d) => d.slug === slug);
+  }
+
+  public async cancelSubscription({ teamId }: { teamId: string }) {
+    try {
+      const { isSubscriptionActive } = await cancelSubscriptionApiMethod({ teamId });
+
+      runInAction(() => {
+        this.isSubscriptionActive = isSubscriptionActive;
+      });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+  public async checkIfTeamLeaderMustBeCustomer() {
+    let ifTeamLeaderMustBeCustomerOnClient: boolean;
+
+    if (this && this.memberIds.length < 2) {
+      ifTeamLeaderMustBeCustomerOnClient = false;
+    } else if (this && this.memberIds.length >= 2 && this.isSubscriptionActive) {
+      ifTeamLeaderMustBeCustomerOnClient = false;
+    } else if (this && this.memberIds.length >= 2 && !this.isSubscriptionActive) {
+      ifTeamLeaderMustBeCustomerOnClient = true;
+    }
+
+    return ifTeamLeaderMustBeCustomerOnClient;
   }
 
   get orderedDiscussions() {

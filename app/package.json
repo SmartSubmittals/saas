@@ -13,6 +13,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/lab": "^4.0.0-alpha.56",
+    "@stripe/stripe-js": "^1.11.0",
     "@types/socket.io-client": "1.4.33",
     "dotenv": "^8.1.0",
     "eslint-plugin-react": "^7.21.5",
