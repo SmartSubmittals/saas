@@ -17,7 +17,7 @@ You, as a software developer and business owner, should answer this question ear
 
 
 
-last checkpoint: [Email Notification](https://builderbook.org/books/saas-boilerplate/stripe-api-api-project-stripe-api-app-project-setup-at-stripe-dashboard-and-environmental-variables-email-notification-for-new-post-api-api-project-amazon-api-gateway-and-aws-lambda#email-notification-for-new-post-api-api-project)
+last checkpoint: [Final!](https://builderbook.org/books/saas-boilerplate/environmental-variables-production-development-logger-app-server-api-server-seo-robots-txt-sitemap-xml-server-side-caching-google-analytics-heroku-testing-application-in-production-aws-elastic-beanstalk)
 
 
 ## Deployment 
