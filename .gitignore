@@ -2,3 +2,5 @@
 .env
 # ignore node_modules
 node_modules
+#ignore DS_Store
+.DS_Store
