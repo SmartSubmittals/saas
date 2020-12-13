@@ -327,6 +327,7 @@ if (request && request.headers && request.headers.cookie) {
 - In our application, the normal flow of data is: a page component or non-page component method calls a store method, this store method calls an API method, this API method typically sends a request to our API server (but in the current case, the API method sends a request to an external server, Amazon API Gateway's server).
 
 ## Amazon API Gateway
+- https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html
 
 
 ## Further reading 
