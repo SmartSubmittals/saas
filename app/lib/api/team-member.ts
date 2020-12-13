@@ -102,6 +102,12 @@ export const deletePostApiMethod = (data) =>
     body: JSON.stringify(data),
   });
 
+export const sendDataToLambdaApiMethod = (data) =>
+  sendRequestAndGetResponse(`${process.env.API_GATEWAY_ENDPOINT}/`, {
+    externalServer: true,
+    body: JSON.stringify(data),
+  });
+
 /**
  * Notes:
  * - We place the code to a team-member.ts file instead of public.ts, because uploading files is allowed only for logged-in users.

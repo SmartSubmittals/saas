@@ -137,28 +137,6 @@ class CreateDiscussionForm extends React.Component<Props, State> {
                 store={store}
               /> */}
               <p />
-              <div>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={this.state.disabled}
-                >
-                  Create Discussion
-                </Button>
-                {isMobile ? <p /> : null}
-                <Button
-                  variant="outlined"
-                  onClick={this.handleClose}
-                  disabled={this.state.disabled}
-                  style={{ marginLeft: isMobile ? '0px' : '20px' }}
-                >
-                  Cancel
-                </Button>{' '}
-                <p />
-                <br />
-                <br />
-              </div>
             </form>
           </DialogContent>
         </Dialog>
@@ -192,7 +170,12 @@ class CreateDiscussionForm extends React.Component<Props, State> {
       return;
     }
 
-    const { name, memberIds, notificationType } = this.state;
+    const { name, memberIds, content, notificationType } = this.state;
+
+    if (!notificationType) {
+      notify('Please select notification type.');
+      return;
+    }
 
     if (!name) {
       notify('Name is required');
@@ -226,21 +209,19 @@ class CreateDiscussionForm extends React.Component<Props, State> {
         notificationType,
       });
 
-      //   const post = await discussion.addPost(content);
+      const post = await discussion.addPost(content);
 
-      //   if (discussion.notificationType === 'email') {
-      //     const userIdsForLambda = discussion.memberIds.filter((m) => m !== discussion.createdUserId);
+      if (discussion.notificationType === 'email') {
+        const userIdsForLambda = discussion.memberIds.filter((m) => m !== discussion.createdUserId);
 
-      //     await discussion.sendDataToLambda({
-      //       discussionName: discussion.name,
-      //       discussionLink: `${dev ? process.env.URL_APP : process.env.PRODUCTION_URL_APP}/team/${
-      //         discussion.team.slug
-      //       }/discussions/${discussion.slug}`,
-      //       postContent: post.content,
-      //       authorName: post.user.displayName,
-      //       userIds: userIdsForLambda,
-      //     });
-      //   }
+        await discussion.sendDataToLambda({
+          discussionName: discussion.name,
+          discussionLink: `${process.env.URL_APP}/team/${discussion.team.slug}/discussions/${discussion.slug}`,
+          postContent: post.content,
+          authorName: post.user.displayName,
+          userIds: userIdsForLambda,
+        });
+      }
 
       this.setState({ name: '', memberIds: [], content: '', notificationType: 'default' });
 

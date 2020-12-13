@@ -322,6 +322,13 @@ if (request && request.headers && request.headers.cookie) {
 - When Team Leader decided to cancel subscription, Team Leader clicks on Unsubscribe Team button at Billing page. After click, our application will call cancelSubscriptionApiMethod API method and cancelSubscriptionApiMethod will send request to Express route /cancel-subscription. Express route /cancel-subscription calls Team.cancelSubscription that we deifned in the Team Model - API subsection and return isSubscriptionActive to cancelSubscriptionApiMethod API method at browser
 - When Team Leader decided to see list of recurring payments made to date, Team Leader clicks on Show payment history button at Billing page. Our application triggers getListOfInvoicesApiMethod API method that sends request to Express route get-list-of-invoices-for-customer. Inside this Express route, we call User.getListOfInvoicesForCustomer that we defined in User Model - API subsection. Handler function of Express route receives array of invoices and sends it back to browser, to getListOfInvoicesApiMethod API method
 
+
+## More on Data Store
+- In our application, the normal flow of data is: a page component or non-page component method calls a store method, this store method calls an API method, this API method typically sends a request to our API server (but in the current case, the API method sends a request to an external server, Amazon API Gateway's server).
+
+## Amazon API Gateway
+
+
 ## Further reading 
 - principle of least privilege:
 
