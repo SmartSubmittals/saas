@@ -172,10 +172,10 @@ class PostForm extends React.Component<Props, State> {
     try {
       const post = await discussion.addPost(content);
 
-      this.setState({ content: '' });
-
       if (discussion.notificationType === 'email') {
         const userIdsForLambda = discussion.memberIds.filter((m) => m !== store.currentUser._id);
+
+        this.setState({ content: '' });
 
         await discussion.sendDataToLambda({
           discussionName: discussion.name,
@@ -186,7 +186,6 @@ class PostForm extends React.Component<Props, State> {
         });
       }
 
-      this.setState({ content: '' });
       notify('You successfully published new Post.');
     } catch (error) {
       console.log(error);
