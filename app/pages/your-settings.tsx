@@ -57,8 +57,8 @@ class YourSettings extends React.Component<Props, State> {
               done
             </i>{' '}
             {currentUser.isSignedupViaGoogle
-              ? 'You signed up on Async using your Google account.'
-              : 'You signed up on Async using your email.'}
+              ? 'You signed up on SAAS using your Google account.'
+              : 'You signed up on SAAS using your email.'}
             <p />
             <li>
               Your email: <b>{currentUser.email}</b>
