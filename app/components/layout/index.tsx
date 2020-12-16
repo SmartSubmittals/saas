@@ -167,6 +167,8 @@ class Layout extends React.Component<Props> {
 
     // console.log(isMobile);
 
+    console.log(isThemeDark);
+
     // console.log(currentTeam);
 
     if (!currentUser) {
